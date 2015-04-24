@@ -32,7 +32,6 @@ set __bobthefish_left_arrow_glyph        \uE0B3
 
 # Additional glyphs
 set __bobthefish_detached_glyph          \u27A6
-set __bobthefish_nonzero_exit_glyph      '! '
 set __bobthefish_superuser_glyph         '$ '
 set __bobthefish_bg_job_glyph            '% '
 set __bobthefish_hg_glyph                \u263F
@@ -198,11 +197,6 @@ function __bobthefish_prompt_status -d 'Display symbols for a non zero exit stat
   set -l superuser
   set -l bg_jobs
 
-  # Last exit was nonzero
-  if [ $status -ne 0 ]
-    set nonzero $__bobthefish_nonzero_exit_glyph
-  end
-
   # if superuser (uid == 0)
   set -l uid (id -u $USER)
   if [ $uid -eq 0 ]
@@ -218,10 +212,6 @@ function __bobthefish_prompt_status -d 'Display symbols for a non zero exit stat
 
   if [ "$nonzero" -o "$superuser" -o "$bg_jobs" ]
     __bobthefish_start_segment fff 000
-    if [ "$nonzero" ]
-      set_color $__bobthefish_med_red --bold
-      echo -n $__bobthefish_nonzero_exit_glyph
-    end
 
     if [ "$superuser" ]
       set_color $__bobthefish_med_green --bold
