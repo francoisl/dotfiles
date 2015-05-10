@@ -32,9 +32,9 @@ set __bobthefish_left_arrow_glyph        \uE0B3
 
 # Additional glyphs
 set __bobthefish_detached_glyph          \u27A6
-#REMOVE set __bobthefish_nonzero_exit_glyph      '! '
+set __bobthefish_nonzero_exit_glyph      '! '
 set __bobthefish_superuser_glyph         '$ '
-#REMOVE set __bobthefish_bg_job_glyph            '% '
+set __bobthefish_bg_job_glyph            '% '
 set __bobthefish_hg_glyph                \u263F
 
 # Python glyphs
@@ -194,7 +194,14 @@ end
 # ===========================
 
 function __bobthefish_prompt_status -d 'Display symbols for a non zero exit status, root and background jobs'
+  set -l nonzero
   set -l superuser
+  set -l bg_jobs
+
+  # Last exit was nonzero
+  if [ $status -ne 0 ]
+    set nonzero $__bobthefish_nonzero_exit_glyph
+  end
 
   # if superuser (uid == 0)
   set -l uid (id -u $USER)
@@ -202,13 +209,29 @@ function __bobthefish_prompt_status -d 'Display symbols for a non zero exit stat
     set superuser $__bobthefish_superuser_glyph
   end
 
+  # Jobs display
+  if [ (jobs -l | wc -l) -gt 0 ]
+    set bg_jobs $__bobthefish_bg_job_glyph
+  end
+
   set -l status_flags "$nonzero$superuser$bg_jobs"
 
-  if [ -o "$superuser" ]
-    __bobthefish_start_segment fff 000
+  if [ "$nonzero" -o "$superuser" -o "$bg_jobs" ]
+    __bobthefish_start_segment $__bobthefish_dk_grey 000
+    if [ "$nonzero" ]
+      set_color $__bobthefish_ruby_red --bold
+      echo -n $__bobthefish_nonzero_exit_glyph
+    end
 
-    set_color $__bobthefish_med_green --bold
-    echo -n $__bobthefish_superuser_glyph
+    if [ "$superuser" ]
+      set_color $__bobthefish_med_green --bold
+      echo -n $__bobthefish_superuser_glyph
+    end
+
+    if [ "$bg_jobs" ]
+      set_color $__bobthefish_slate_blue --bold
+      echo -n $__bobthefish_bg_job_glyph
+    end
 
     set_color normal
   end
