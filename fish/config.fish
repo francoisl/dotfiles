@@ -17,3 +17,4 @@ set fish_plugins theme
 
 # Aliases
 alias cat ccat
+alias ocat /bin/cat
