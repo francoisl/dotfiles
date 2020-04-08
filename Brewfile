@@ -43,6 +43,7 @@ brew "htop"
 brew "oniguruma"
 brew "jq"
 brew "lolcat"
+brew "mas"
 brew "maven"
 brew "mysql"
 brew "nmap"
@@ -56,7 +57,7 @@ brew "ruby-build"
 brew "rbenv"
 brew "ripgrep"
 brew "rlwrap"
-brew "ssh-copy-id"
+brew "ssh-copy-id", link: true
 brew "tig"
 brew "tldr"
 brew "tmux"
@@ -74,3 +75,9 @@ cask "sequel-pro"
 cask "vagrant"
 cask "virtualbox"
 cask "xquartz"
+mas "Amphetamine", id: 937984704
+mas "Kaomoji", id: 1025701729
+mas "Microsoft Remote Desktop", id: 1295203466
+mas "Pocket", id: 568494494
+mas "Todoist", id: 585829637
+mas "Xcode", id: 497799835
