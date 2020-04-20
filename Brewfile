@@ -61,6 +61,7 @@ brew "ssh-copy-id", link: true
 brew "tig"
 brew "tldr"
 brew "tmux"
+brew "tree"
 brew "wget"
 brew "yadm"
 brew "github/gh/gh"
