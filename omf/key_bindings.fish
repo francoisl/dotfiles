@@ -1,1 +1,2 @@
-bind \ef 'ffv'
+bind \ef 'ffc'
+bind \ev 'ffv'
