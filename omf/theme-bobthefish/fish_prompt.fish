@@ -417,8 +417,8 @@ function __bobthefish_prompt_status -S -a last_status -d 'Display flags for a no
     set -l bg_jobs
 
     # Last exit was nonzero
-    [ $last_status -ne 0 ]
-    and set nonzero 1
+    # [ $last_status -ne 0 ]
+    # and set nonzero 1
 
     # If superuser (uid == 0)
     #
