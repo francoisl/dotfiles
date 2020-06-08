@@ -23,7 +23,7 @@
 	ui = true
 # separate file for user name / email / etc.
 [include]
-  path = ~/.gitconfig.local
+    path = ~/.gitconfig.local
 [commit]
 	gpgsign = true
 [core]
