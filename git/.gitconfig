@@ -1,34 +1,34 @@
 [alias]
-	co = checkout
-	ci = commit
-	st = status
-	br = branch
-	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-	dc = diff --cached
-	#type = cat-file -t
-	#dump = cat-file -p
-	dw = diff --color-words=.
-	dww = diff --color-words
-	rbi = rebase master --interactive
-	# Typos
-	dif = diff
-	difff = diff
-	sts = status
-	dad = add
-	ad = add
-	addd = add
-	t = status
-	s = status
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    dc = diff --cached
+    #type = cat-file -t
+    #dump = cat-file -p
+    dw = diff --color-words=.
+    dww = diff --color-words
+    rbi = rebase master --interactive
+    # Typos
+    dif = diff
+    difff = diff
+    sts = status
+    dad = add
+    ad = add
+    addd = add
+    t = status
+    s = status
 [color]
-	ui = true
+    ui = true
 # separate file for user name / email / etc.
 [include]
     path = ~/.gitconfig.local
 [commit]
-	gpgsign = true
+    gpgsign = true
 [core]
-	pager = diff-so-fancy | less --tabs=4 -RFX
+    pager = diff-so-fancy | less --tabs=4 -RFX
 [diff-so-fancy]
-	markEmptyLines = true
-	changeHunkIndicators = true
-	stripLeadingSymbols = true
+    markEmptyLines = true
+    changeHunkIndicators = true
+    stripLeadingSymbols = true
