@@ -16,6 +16,8 @@ abbr -a -U -- gap 'git add --patch'
 abbr -a -U -- gcb git-clean-branches
 abbr -a -U -- gco 'git co'
 abbr -a -U -- gdc 'git diff --cached'
+abbr -a -g -- gifconvert 'ffmpeg -i input.mov -f gif -filter_complex "[0:v] fps=24,scale=w=1500:h=-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" output.gif'
+abbr -a -U -- gl 'git log'
 abbr -a -U -- gpom 'git pull origin master'
 abbr -a -U -- it git
 abbr -a -U -- pu 'git push origin'
@@ -23,4 +25,3 @@ abbr -a -U -- puf 'git push -f origin'
 abbr -a -U -- scpb scp\ -o\ \'ProxyJump\ bastion\'
 abbr -a -U -- st 'git st'
 abbr -a -U -- utc 'date -u +"%Y-%m-%dT%H:%M:%SZ"'
-abbr -a -U -- gl 'git log'
