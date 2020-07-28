@@ -32,3 +32,5 @@
     markEmptyLines = true
     changeHunkIndicators = true
     stripLeadingSymbols = true
+[pull]
+	rebase = false
