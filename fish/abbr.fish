@@ -1,3 +1,4 @@
+abbr -a -U -- 2f '2fa expensify | pbcopy'
 abbr -a -U -- ad 'git add'
 abbr -a -U -- adu 'git add -u'
 abbr -a -U -- br 'git br'
