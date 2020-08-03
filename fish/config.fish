@@ -9,3 +9,5 @@ set -x GOPATH $HOME/go
 set -x GOROOT /usr/local/opt/go/libexec
 set PATH $GOPATH/bin $GOROOT/bin $PATH
 
+# auto path for cd command
+set -x CDPATH ~/Expensidev/ ~/code
