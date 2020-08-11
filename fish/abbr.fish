@@ -22,6 +22,7 @@ abbr -a -U -- gifconvert 'ffmpeg -i input.mov -f gif -filter_complex "[0:v] fps=
 abbr -a -U -- gl 'git log'
 abbr -a -U -- gpom 'git pull origin master'
 abbr -a -U -- it git
+abbr -a -U -- jp jsonPretty
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
 abbr -a -U -- scpb scp\ -o\ \'ProxyJump\ bastion\'
