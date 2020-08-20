@@ -7,7 +7,9 @@ status --is-interactive; and source (rbenv init -|psub)
 # Go path
 set -x GOPATH $HOME/go
 set -x GOROOT /usr/local/opt/go/libexec
-set PATH $GOPATH/bin $GOROOT/bin $PATH
+
+# PATH modifications (Go, Python 3)
+set PATH $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin/ $PATH
 
 # auto path for cd command
 set -x CDPATH ~/Expensidev/ ~/code ~/ .
