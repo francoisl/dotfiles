@@ -9,3 +9,7 @@ curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fi
 echo "Installing fisher plugins"
 fisher add edc/bass
 fisher add FabioAntunes/fish-nvm
+
+# pyenv configs
+set -Ux PYENV_ROOT $HOME/.pyenv
+set -Ux fish_user_paths $PYENV_ROOT/bin $fish_user_paths
