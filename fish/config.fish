@@ -16,3 +16,7 @@ set -x CDPATH ~/Expensidev/ ~/code ~/ .
 if command -v pyenv 1>/dev/null 2>&1;
   pyenv init - | source;
 end
+
+# Theme modifications
+### Enable nerd fonts for bobthefish
+set -g theme_nerd_fonts yes
