@@ -13,3 +13,6 @@ set PATH $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin/ $PATH
 
 # auto path for cd command
 set -x CDPATH ~/Expensidev/ ~/code ~/ .
+if command -v pyenv 1>/dev/null 2>&1;
+  pyenv init - | source;
+end
