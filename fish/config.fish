@@ -11,6 +11,9 @@ set -x GOROOT /usr/local/opt/go/libexec
 # PATH modifications (Go, Python 3)
 set PATH $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin/ $PATH
 
+# Dirty hack for NVM mindfuck
+set PATH /Users/francois/.nvm/versions/node/v14.4.0/bin $PATH
+
 # auto path for cd command
 set -x CDPATH ~/Expensidev/ ~/code ~/ .
 if command -v pyenv 1>/dev/null 2>&1;
