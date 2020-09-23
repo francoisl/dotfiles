@@ -21,3 +21,6 @@ end
 # Theme modifications
 ### Enable nerd fonts for bobthefish
 set -g theme_nerd_fonts yes
+
+# Custom user paths
+set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
