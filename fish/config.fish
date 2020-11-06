@@ -21,6 +21,8 @@ end
 # Theme modifications
 ### Enable nerd fonts for bobthefish
 set -g theme_nerd_fonts yes
+### Colors
+set fish_color_search_match --background='343434'
 
 # Custom user paths
 set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
