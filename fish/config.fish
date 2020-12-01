@@ -9,7 +9,9 @@ set -x GOPATH $HOME/go
 set -x GOROOT /usr/local/opt/go/libexec
 
 # PATH modifications (Go, Python 3)
-set PATH $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin/ $PATH
+set -g fish_user_paths /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin $fish_user_paths
+# Hack, don't try this at home
+set -g fish_user_paths /Users/francois/.nvm/versions/node/v14.10.0/bin $fish_user_paths
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
@@ -24,5 +26,5 @@ set -g theme_nerd_fonts yes
 ### Colors
 set fish_color_search_match --background='343434'
 
-# Custom user paths
-set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
+# Ruby brew link
+# export RUBY_CONFIGURE_OPTS="--with-openssl-dir="(brew --prefix openssl@1.1)
