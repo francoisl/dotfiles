@@ -3,12 +3,11 @@ set -U fish_user_paths /usr/local/bin $fish_user_paths
 
 # Install fisher
 echo "Installing fisher"
-curl https://git.io/fisher --create-dirs -sLo ~/.config/fish/functions/fisher.fish
+curl -sL https://git.io/fisher | source
 
-# Install common fisher plugins
+# Install fisher and plugins
 echo "Installing fisher plugins"
-fisher add edc/bass
-fisher add FabioAntunes/fish-nvm
+fisher update
 
 # pyenv configs
 set -Ux PYENV_ROOT $HOME/.pyenv
