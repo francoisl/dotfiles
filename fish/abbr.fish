@@ -13,7 +13,6 @@ abbr -a -U -- cop 'git co .'
 abbr -a -U -- dif 'git diff'
 abbr -a -U -- e 'exa -la'
 abbr -a -U -- fet 'git fetch origin'
-abbr -a -U -- fpu 'git push -f origin'
 abbr -a -U -- gap 'git add --patch'
 abbr -a -U -- gcb git-clean-branches
 abbr -a -U -- gco 'git co'
