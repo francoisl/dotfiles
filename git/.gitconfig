@@ -33,4 +33,4 @@
     changeHunkIndicators = true
     stripLeadingSymbols = true
 [pull]
-	rebase = false
+    rebase = false
