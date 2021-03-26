@@ -14,6 +14,7 @@ abbr -a -U -- dif 'git diff'
 abbr -a -U -- e 'exa -la'
 abbr -a -U -- fet 'git fetch origin'
 abbr -a -U -- gap 'git add --patch'
+abbr -a -U -- gapl 'git apply'
 abbr -a -U -- gcb git-clean-branches
 abbr -a -U -- gco 'git co'
 abbr -a -U -- gdc 'git diff --cached'
