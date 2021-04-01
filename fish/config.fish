@@ -23,6 +23,8 @@ end
 set -g theme_nerd_fonts yes
 ### Colors
 set fish_color_search_match --background='343434'
+### Read the default timezone to avoid using UTC in fish_right_prompt
+set -g theme_date_timezone (ls -l /etc/localtime | cut -d"/" -f8,9)
 
 # Ruby brew link
 # export RUBY_CONFIGURE_OPTS="--with-openssl-dir="(brew --prefix openssl@1.1)
