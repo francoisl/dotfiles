@@ -29,4 +29,5 @@ abbr -a -U -- puf 'git push -f origin'
 abbr -a -U -- st 'git st'
 abbr -a -U -- stt 'git stash'
 abbr -a -U -- utc 'date -u +"%Y-%m-%dT%H:%M:%SZ"'
+abbr -a -U -- vag vagrant
 abbr -a -U -- venv 'source venv/bin/activate.fish'
