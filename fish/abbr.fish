@@ -21,7 +21,7 @@ abbr -a -U -- gdc 'git diff --cached'
 abbr -a -U -- gifconvert 'ffmpeg -i input.mov -f gif -filter_complex "[0:v] fps=24,scale=w=1500:h=-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" output.gif'
 abbr -a -U -- gl 'git log'
 abbr -a -U -- gpo 'git pull origin'
-abbr -a -U -- gpom 'git pull origin master'
+abbr -a -U -- gpom 'git pull origin (mainBranch)'
 abbr -a -U -- it git
 abbr -a -U -- jp jsonPretty
 abbr -a -U -- pu 'git push origin'
