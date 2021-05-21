@@ -28,6 +28,7 @@
     gpgsign = true
 [core]
     pager = diff-so-fancy | less --tabs=4 -RFX
+	editor = /usr/bin/vim
 [diff-so-fancy]
     markEmptyLines = true
     changeHunkIndicators = true
