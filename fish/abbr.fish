@@ -23,6 +23,7 @@ abbr -a -U -- gl 'git log'
 abbr -a -U -- gpo 'git pull origin'
 abbr -a -U -- gpom 'git pull origin (mainBranch)'
 abbr -a -U -- it git
+abbr -a -U -- jop 'j; and pbpaste'
 abbr -a -U -- jp jsonPretty
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
