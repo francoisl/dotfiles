@@ -22,6 +22,7 @@ abbr -a -U -- gifconvert 'ffmpeg -i input.mov -f gif -filter_complex "[0:v] fps=
 abbr -a -U -- gl 'git log'
 abbr -a -U -- gpo 'git pull origin'
 abbr -a -U -- gpom 'git pull origin (mainBranch)'
+abbr -a -U -- gw 'grunt; and grunt watch'
 abbr -a -U -- it git
 abbr -a -U -- jop 'j; and pbpaste'
 abbr -a -U -- jp jsonPretty
