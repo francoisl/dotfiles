@@ -9,7 +9,7 @@
     #dump = cat-file -p
     dw = diff --color-words=.
     dww = diff --color-words
-    rbi = rebase master --interactive
+    rbi = rebase main --interactive
     # Typos
     dif = diff
     difff = diff
