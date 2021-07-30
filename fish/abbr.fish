@@ -28,6 +28,7 @@ abbr -a -U -- jop 'j; and pbpaste'
 abbr -a -U -- jp jsonPretty
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
+abbr -a -U -- rge rg\ --glob\ \'\*.
 abbr -a -U -- st 'git st'
 abbr -a -U -- stt 'git stash'
 abbr -a -U -- utc 'date -u +"%Y-%m-%dT%H:%M:%SZ"'
