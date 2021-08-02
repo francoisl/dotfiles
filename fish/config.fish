@@ -31,3 +31,5 @@ set -g theme_date_timezone (ls -l /etc/localtime | cut -d"/" -f8,9)
 
 # rbenv init. Must be on the last line
 status --is-interactive; and source (rbenv init -|psub)
+
+fish_add_path /usr/local/opt/sqlite/bin
