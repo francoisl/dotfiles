@@ -7,6 +7,7 @@ set -x GOROOT /usr/local/opt/go/libexec
 
 # PATH modifications (Go, Python 3)
 set -g fish_user_paths /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin $fish_user_paths
+fish_add_path /usr/local/opt/sqlite/bin
 
 # Set default node version (fast-nvm-fish recommended)
 nvm use 14.15.1
@@ -31,5 +32,3 @@ set -g theme_date_timezone (ls -l /etc/localtime | cut -d"/" -f8,9)
 
 # rbenv init. Must be on the last line
 status --is-interactive; and source (rbenv init -|psub)
-
-fish_add_path /usr/local/opt/sqlite/bin
