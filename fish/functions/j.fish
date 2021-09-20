@@ -1,3 +1,3 @@
-function j --description 'Beautify JSON in clipboard' --argument arg1 arg2
-    pbpaste | jsonPretty; and pbcopy
+function j --description 'Beautify JSON in clipboard'
+    pbpaste | jsonPretty; and pbpaste | jsonPretty | pbcopy
 end
