@@ -20,6 +20,8 @@ if command -v pyenv 1>/dev/null 2>&1;
 end
 
 # Theme modifications
+### Change bobthefish theme color set (bobthefish_display_colors --all)
+set theme_color_scheme nord
 ### Enable nerd fonts for bobthefish
 set -g theme_nerd_fonts yes
 ### Colors
