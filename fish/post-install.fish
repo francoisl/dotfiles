@@ -18,3 +18,6 @@ set -Ux fish_user_paths $PYENV_ROOT/bin $fish_user_paths
 echo "Installing fzf key bindings and completions"
 set brewPrefix (brew --prefix)
 $brewPrefix/opt/fzf/install
+
+# Enable nord theme for bobthefish
+set theme_color_scheme nord
