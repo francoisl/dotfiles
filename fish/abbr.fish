@@ -31,6 +31,7 @@ abbr -a -U -- jp jsonPretty
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
 abbr -a -U -- rge rg\ --glob\ \'\*.
+abbr -a -U -- rgf 'rg -F'
 abbr -a -U -- rgi 'rg -i'
 abbr -a -U -- st 'git st'
 abbr -a -U -- stt 'git stash'
