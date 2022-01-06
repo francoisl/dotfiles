@@ -25,6 +25,7 @@ abbr -a -U -- gpo 'git pull origin'
 abbr -a -U -- gpom 'git pull origin (mainBranch)'
 abbr -a -U -- gr 'cd (git rev-parse --show-toplevel)'
 abbr -a -U -- gw 'grunt; and grunt watch'
+abbr -a -U -- iosSim /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator
 abbr -a -U -- it git
 abbr -a -U -- jop 'j; and pbpaste'
 abbr -a -U -- jp jsonPretty
