@@ -31,6 +31,7 @@ abbr -a -U -- jop 'j; and pbpaste'
 abbr -a -U -- jp jsonPretty
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
+abbr -a -U -- rbm 'git rebase (mainBranch)'
 abbr -a -U -- rge rg\ --glob\ \'\*.
 abbr -a -U -- rgf 'rg -F'
 abbr -a -U -- rgi 'rg -i'
