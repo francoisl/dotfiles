@@ -10,7 +10,7 @@ set -g fish_user_paths /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/loca
 fish_add_path /usr/local/opt/sqlite/bin
 
 # Set default node version (fast-nvm-fish recommended)
-nvm use 14.18.2
+nvm use 14.19.0
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
