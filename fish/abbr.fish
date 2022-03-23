@@ -35,6 +35,7 @@ abbr -a -U -- rbm 'git rebase (mainBranch)'
 abbr -a -U -- rge rg\ --glob\ \'\*.
 abbr -a -U -- rgf 'rg -F'
 abbr -a -U -- rgi 'rg -i'
+abbr -a -U -- rrm 'rm -rf'
 abbr -a -U -- st 'git st'
 abbr -a -U -- stt 'git stash'
 abbr -a -U -- utc 'date -u +"%Y-%m-%dT%H:%M:%SZ"'
