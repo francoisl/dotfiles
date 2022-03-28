@@ -22,7 +22,7 @@ abbr -a -U -- gdc 'git diff --cached'
 abbr -a -U -- gifconvert 'ffmpeg -i input.mov -f gif -filter_complex "[0:v] fps=24,scale=w=1500:h=-1,split [a][b];[a] palettegen [p];[b][p] paletteuse" output.gif'
 abbr -a -U -- gl 'git log'
 abbr -a -U -- gpo 'git pull origin'
-abbr -a -U -- gpom 'git pull origin (mainBranch)'
+abbr -a -U -- gpom 'git pull origin main'
 abbr -a -U -- gr 'cd (git rev-parse --show-toplevel)'
 abbr -a -U -- gw 'grunt; and grunt watch'
 abbr -a -U -- iosSim /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator
