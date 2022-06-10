@@ -24,6 +24,8 @@ end
 set theme_color_scheme nord
 ### Enable nerd fonts for bobthefish
 set -g theme_nerd_fonts yes
+set -g theme_display_git_untracked no
+
 ### Colors
 set fish_color_search_match --background='343434'
 ### Read the default timezone to avoid using UTC in fish_right_prompt
