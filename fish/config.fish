@@ -5,8 +5,9 @@
 #set -x GOROOT /usr/local/opt/go/libexec
 
 # PATH modifications (Go, Python 3)
-set -g fish_user_paths /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin $fish_user_paths
-fish_add_path /usr/local/bin /opt/homebrew/bin ~/.rbenv/shims ~/.pyenv/shims
+fish_add_path /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin
+# fish_add_path /usr/local/bin /opt/homebrew/bin ~/.rbenv/shims ~/.pyenv/shims
+fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
 
 # Set default node version (fast-nvm-fish recommended)
 nvm use 14.19.3 >/dev/null
