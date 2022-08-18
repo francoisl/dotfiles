@@ -36,6 +36,7 @@ abbr -a -U -- rbm 'git rebase main'
 abbr -a -U -- recommit 'git ci --amend --no-edit'
 abbr -a -U -- rge rg\ --glob\ \'\*.
 abbr -a -U -- rgf 'rg -F'
+abbr -a -U -- rgfi 'rg -Fi'
 abbr -a -U -- rgi 'rg -i'
 abbr -a -U -- rrm 'rm -rf'
 abbr -a -U -- st 'git st'
