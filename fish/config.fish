@@ -39,4 +39,5 @@ set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir="(brew --prefix openssl@1.1)
 # Interactive shell init
 if status is-interactive
     source (rbenv init -|psub)
+    _load_nvm
 end
