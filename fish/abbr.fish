@@ -33,6 +33,7 @@ abbr -a -U -- jp jsonPretty
 abbr -a -U -- na 'npm run android'
 abbr -a -U -- nd 'npm run desktop'
 abbr -a -U -- ni 'npm run ios'
+abbr -a -U -- nin 'npm i'
 abbr -a -U -- nw 'npm run web'
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
