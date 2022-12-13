@@ -30,6 +30,10 @@ abbr -a -U -- iosSim /Applications/Xcode.app/Contents/Developer/Applications/Sim
 abbr -a -U -- it git
 abbr -a -U -- jop 'j; and pbpaste'
 abbr -a -U -- jp jsonPretty
+abbr -a -U -- na 'npm run android'
+abbr -a -U -- nd 'npm run desktop'
+abbr -a -U -- ni 'npm run ios'
+abbr -a -U -- nw 'npm run web'
 abbr -a -U -- pu 'git push origin'
 abbr -a -U -- puf 'git push -f origin'
 abbr -a -U -- rbm 'git rebase main'
