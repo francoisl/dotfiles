@@ -1,18 +1,11 @@
-# iTerm 2 shell integration
-# test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
-
 # Path to the local dotfile repo. Used to source stuff
 set -l dotfile_config_path ~/code/dotfiles/fish/
 
-#set -x GOPATH $HOME/go
-#set -x GOROOT /usr/local/opt/go/libexec
-
 # PATH modifications (Go, Python 3)
 fish_add_path /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin
-# fish_add_path /usr/local/bin /opt/homebrew/bin ~/.rbenv/shims ~/.pyenv/shims
 fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
 
-# Set default node version (fast-nvm-fish recommended)
+# Set default node version (fast-nvm-fish)
 nvm use 14.21.1 >/dev/null
 
 # auto path for cd command
@@ -41,7 +34,7 @@ set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir="(brew --prefix openssl@1.1)
 
 # Interactive shell init
 if status is-interactive
-    source (rbenv init -|psub)
+    source (rbenv init - | psub)
 
     # Auto-change node version on cd
     _load_nvm
