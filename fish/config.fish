@@ -1,6 +1,3 @@
-# Path to the local dotfile repo. Used to source stuff
-set -l dotfile_config_path ~/code/dotfiles/fish/
-
 # PATH modifications (Go, Python 3)
 fish_add_path /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin
 fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
@@ -38,7 +35,4 @@ if status is-interactive
 
     # Auto-change node version on cd
     _load_nvm
-
-    # Load fish abbreviations
-    test -e $dotfile_config_path/abbr.fish; and source $dotfile_config_path/abbr.fish
 end
