@@ -3,7 +3,7 @@ fish_add_path /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/pyt
 fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
 
 # Set default node version (fast-nvm-fish)
-nvm use 14.21.1 >/dev/null
+nvm use 14.21.3 >/dev/null
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
