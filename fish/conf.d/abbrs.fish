@@ -50,3 +50,5 @@ abbr -a --set-cursor='%' -- cim 'git commit -m "%"'
 abbr -a --set-cursor='%' -- ciam 'git commit -am "%"'
 abbr -a --function abbr_pu -- pu
 abbr -a --set-cursor='%' -- rrg 'rg -Fi "%" ./*'
+abbr -a -- np 'npm run prettier'
+abbr -a --set-cursor='%' -- rge rg\ --glob\ \'\*.\%\'
