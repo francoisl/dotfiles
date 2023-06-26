@@ -50,5 +50,6 @@ abbr -a --set-cursor='%' -- cim 'git commit -m "%"'
 abbr -a --set-cursor='%' -- ciam 'git commit -am "%"'
 abbr -a --function abbr_pu -- pu
 abbr -a --set-cursor='%' -- rrg 'rg -Fi "%" ./*'
-abbr -a -- np 'npm run prettier'
+abbr -a -- gpoms 'git pull origin main --autostash'
 abbr -a --set-cursor='%' -- rge rg\ --glob\ \'\*.\%\'
+abbr -a -- npret 'npm run prettier'
