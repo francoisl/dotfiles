@@ -1,5 +1,4 @@
 edc/bass
-FabioAntunes/fish-nvm
-nickeb96/puffer-fish
-brigand/fast-nvm-fish
-jorgebucaran/fisher
+jorgebucaran/nvm.fish
+jethrokuan/z
+reitzig/sdkman-for-fish@v1.4.0
