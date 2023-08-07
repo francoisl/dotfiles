@@ -2,6 +2,10 @@
 fish_add_path /usr/local/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin
 fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
 
+# Android SDK
+set -x ANDROID_HOME $HOME/Library/Android/sdk/
+fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/tools $ANDROID_HOME/tools/bin
+
 # Set default node version (fast-nvm-fish)
 nvm use 14.21.3 >/dev/null
 
@@ -24,10 +28,8 @@ set fish_color_search_match --background='343434'
 ### Read the default timezone to avoid using UTC in fish_right_prompt
 set -g theme_date_timezone (ls -l /etc/localtime | cut -d"/" -f8,9)
 
-# Android SDK
-fish_add_path $HOME/Library/Android/sdk/emulator $HOME/Library/Android/sdk/platform-tools
-
 set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir="(brew --prefix openssl@1.1)
+set -x NODE_EXTRA_CA_CERTS $HOME/Expensidev/Ops-Configs/saltfab/cacert.pem
 
 # Interactive shell init
 if status is-interactive
