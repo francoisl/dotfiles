@@ -1,4 +1,4 @@
-function __bobthefish_colors -S -a color_scheme -d 'Define colors used by bobthefish'
+function __bobthefish_colors --description 'Define colors used by bobthefish' --no-scope-shadowing --argument color_scheme
   switch "$color_scheme"
     case 'user'
       __bobthefish_user_color_scheme_deprecated
@@ -625,73 +625,4 @@ function __bobthefish_colors -S -a color_scheme -d 'Define colors used by bobthe
       set -x color_desk                     $blue[2] $grey[1] --bold
       set -x color_nix                      $blue[2] $grey[1] --bold
   end
-end
-
-function __bobthefish_user_color_scheme_deprecated
-  set -q __color_initial_segment_exit;     or set -l __color_initial_segment_exit     ffffff ce000f --bold
-  set -q __color_initial_segment_private;  or set -l __color_initial_segment_private  ffffff 255e87
-  set -q __color_initial_segment_su;       or set -l __color_initial_segment_su       ffffff 189303 --bold
-  set -q __color_initial_segment_jobs;     or set -l __color_initial_segment_jobs     ffffff 255e87 --bold
-  set -q __color_path;                     or set -l __color_path                     333333 999999
-  set -q __color_path_basename;            or set -l __color_path_basename            333333 ffffff --bold
-  set -q __color_path_nowrite;             or set -l __color_path_nowrite             660000 cc9999
-  set -q __color_path_nowrite_basename;    or set -l __color_path_nowrite_basename    660000 cc9999 --bold
-  set -q __color_repo;                     or set -l __color_repo                     addc10 0c4801
-  set -q __color_repo_work_tree;           or set -l __color_repo_work_tree           333333 ffffff --bold
-  set -q __color_repo_dirty;               or set -l __color_repo_dirty               ce000f ffffff
-  set -q __color_repo_staged;              or set -l __color_repo_staged              f6b117 3a2a03
-  set -q __color_vi_mode_default;          or set -l __color_vi_mode_default          999999 333333 --bold
-  set -q __color_vi_mode_insert;           or set -l __color_vi_mode_insert           189303 333333 --bold
-  set -q __color_vi_mode_visual;           or set -l __color_vi_mode_visual           f6b117 3a2a03 --bold
-  set -q __color_vagrant;                  or set -l __color_vagrant                  48b4fb ffffff --bold
-  set -q __color_username;                 or set -l __color_username                 cccccc 255e87 --bold
-  set -q __color_hostname;                 or set -l __color_hostname                 cccccc 255e87
-  set -q __color_rvm;                      or set -l __color_rvm                      af0000 cccccc --bold
-  set -q __color_virtualfish;              or set -l __color_virtualfish              005faf cccccc --bold
-  set -q __color_virtualgo;                or set -l __color_virtualgo                005faf cccccc --bold
-  set -q __color_desk;                     or set -l __color_desk                     005faf cccccc --bold
-  set -q __color_nix;                      or set -l __color_nix                      005faf cccccc --bold
-
-  set_color black -b red --bold
-  echo "The 'user' color scheme is deprecated."
-  set_color normal
-  set_color black -b red
-  echo "To define a custom color scheme, create a 'bobthefish_colors' function:"
-  set_color normal
-  echo
-
-  echo "function bobthefish_colors -S -d 'Define a custom bobthefish color scheme'
-
-  # optionally include a base color scheme...
-  ___bobthefish_colors default
-
-  # then override everything you want! note that these must be defined with `set -x`
-  set -x color_initial_segment_exit     $__color_initial_segment_exit
-  set -x color_initial_segment_private  $__color_initial_segment_private
-  set -x color_initial_segment_su       $__color_initial_segment_su
-  set -x color_initial_segment_jobs     $__color_initial_segment_jobs
-  set -x color_path                     $__color_path
-  set -x color_path_basename            $__color_path_basename
-  set -x color_path_nowrite             $__color_path_nowrite
-  set -x color_path_nowrite_basename    $__color_path_nowrite_basename
-  set -x color_repo                     $__color_repo
-  set -x color_repo_work_tree           $__color_repo_work_tree
-  set -x color_repo_dirty               $__color_repo_dirty
-  set -x color_repo_staged              $__color_repo_staged
-  set -x color_vi_mode_default          $__color_vi_mode_default
-  set -x color_vi_mode_insert           $__color_vi_mode_insert
-  set -x color_vi_mode_visual           $__color_vi_mode_visual
-  set -x color_vagrant                  $__color_vagrant
-  set -x color_aws_vault                $__color_aws_vault
-  set -x color_aws_vault_expired        $__color_aws_vault_expired
-  set -x color_username                 $__color_username
-  set -x color_hostname                 $__color_hostname
-  set -x color_rvm                      $__color_rvm
-  set -x color_virtualfish              $__color_virtualfish
-  set -x color_virtualgo                $__color_virtualgo
-  set -x color_desk                     $__color_desk
-  set -x color_nix                      $__color_nix
-end"
-
-  echo
 end
