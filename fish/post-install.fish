@@ -37,5 +37,8 @@ set -U tide_git_bg_color_unstable B3666C # C4A000
 set -U tide_git_icon  # 
 set -U tide_git_truncation_length 64 # 24
 
+### ruby item
+set -U tide_ruby_bg_color B30975 # B31209
+
 # Backup icons btf
 ##      | 
