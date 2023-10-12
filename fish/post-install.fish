@@ -32,6 +32,7 @@ set -U tide_right_prompt_items cmd_duration context jobs direnv node python java
 ### pwd item
 set -e tide_pwd_icon
 set -U tide_pwd_bg_color 2f5180 # 3465A4
+set -e tide_pwd_markers # to allow pwd truncating everywhere # .bzr .citc .git .hg .node-version .python-version .ruby-version .shorten_folder_marker .svn .terraform Cargo.toml composer.json CVS go.mod package.json
 
 ### git item
 set -U tide_git_bg_color 5b9623 # 4E9A06
