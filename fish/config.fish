@@ -1,5 +1,5 @@
-# PATH modifications (Go, Python 3)
-fish_add_path /opt/homebrew/opt/curl/bin $GOPATH/bin $GOROOT/bin /usr/local/opt/python/libexec/bin
+# PATH modifications
+fish_add_path /opt/homebrew/opt/curl/bin
 fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
 
 # Android SDK
