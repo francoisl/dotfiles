@@ -7,7 +7,7 @@ set -x ANDROID_HOME $HOME/Library/Android/sdk/
 fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/tools $ANDROID_HOME/tools/bin
 
 # Set default node version (fast-nvm-fish)
-nvm use 20.10.0 >/dev/null
+nvm use 20.13.0 >/dev/null
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
