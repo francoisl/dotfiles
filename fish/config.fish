@@ -7,7 +7,7 @@ set -x ANDROID_HOME $HOME/Library/Android/sdk/
 fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/tools $ANDROID_HOME/tools/bin
 
 # Set default node version (fast-nvm-fish)
-nvm use 20.13.0 >/dev/null
+nvm use 20.14.0 >/dev/null
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
@@ -15,13 +15,6 @@ set -x CDPATH . ~/ ~/Expensidev/ ~/code
 if command -v pyenv 1>/dev/null 2>&1;
   pyenv init - | source;
 end
-
-# Theme modifications
-### Change bobthefish theme color set (bobthefish_display_colors --all)
-set theme_color_scheme nord
-### Enable nerd fonts for bobthefish
-set -g theme_nerd_fonts yes
-set -g theme_display_git_untracked no
 
 ### Colors
 set fish_color_search_match --background='343434'
