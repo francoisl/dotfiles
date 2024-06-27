@@ -27,6 +27,11 @@ set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir="(brew --prefix openssl@1.1)
 set -g EXTRA_CERTS $HOME/Expensidev/Ops-Configs/saltfab/cacert.pem
 ### Node export for scripts
 set -x NODE_EXTRA_CA_CERTS $EXTRA_CERTS
+set -x AWS_CA_BUNDLE $EXTRA_CERTS
+set -x SSL_CERT_FILE $EXTRA_CERTS
+set -x CURL_CA_BUNDLE $EXTRA_CERTS
+set -x BUNDLE_SSL_CA_CERT $EXTRA_CERTS
+set -x REQUESTS_CA_BUNDLE $EXTRA_CERTS
 
 # Interactive shell init
 if status is-interactive
