@@ -1,10 +1,13 @@
 function revert --description 'Revert a PR'
+    argparse 'no-new-branch' -- $argv
     set -l prNumber $argv[1]
-    set revertBranchName (git rev-parse --abbrev-ref HEAD)
 
-    if not contains -- --no-new-branch $argv
+    if set -q _flag_no_new_branch
+        set revertBranchName (git rev-parse --abbrev-ref HEAD)
+    else
         set revertBranchName (whoami)"-revert-$prNumber"
     end
+
     if test "$revertBranchName" = "main"
         echo "Cannot revert PRs on the main branch"
         return 1
