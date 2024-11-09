@@ -59,3 +59,4 @@ abbr -a -- jmin 'pbpaste | jq -r tostring | pbcopy'
 abbr -a -- pdt 'TZ=America/Los_Angeles date'
 abbr -a -- ni 'npm i'
 abbr -a -- nio 'npm run ios'
+abbr -a --regex .+-api --position anywhere --set-cursor=! --function api_command -- dev-api
