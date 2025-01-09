@@ -1,0 +1,19 @@
+theme = tokyonight
+
+window-width = 185
+window-height = 48
+
+# Disable ligatures
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
+
+title = "🐟"
+
+cursor-style = block
+shell-integration-features = no-cursor
+
+background-opacity = 0.9
+background-blur-radius = 10
+window-decoration = true
+
