@@ -1,6 +1,6 @@
 function nipp --description '"npm i and better patch-package" - Run `npm i` and propose to delete Node modules that make patch-package fail'
     set npm_output (npm i | tee /dev/tty)
-    set bad_packages (echo $npm_output | rg -e '\*\*ERROR\*\* Failed to apply patch for package (\S+) at path' -e 'The patches for (\S+) have changed' -r '$1' | sed -e 's/\x1b\[[0-9;]*m//g')
+    set bad_packages (echo $npm_output | rg -o -e 'Failed to apply patch for package (\S+) at path' -e 'The patches for (\S+) have changed' -r '$1' | sed -e 's/\x1b\[[0-9;]*m//g')
 
     if test -z "$bad_packages"
         return
