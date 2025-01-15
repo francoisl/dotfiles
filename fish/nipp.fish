@@ -1,4 +1,4 @@
-function npmipp --description 'Run `npm i` and propose to delete Node modules that make patch-package fail'
+function npmipp --description '"npm i and better patch-package" - Run `npm i` and propose to delete Node modules that make patch-package fail'
     set npm_output (npm i | tee /dev/tty)
     set bad_packages (echo $npm_output | rg -o 'The patches for (\S+) have changed' -r '$1' | sed -e 's/\x1b\[[0-9;]*m//g')
 
