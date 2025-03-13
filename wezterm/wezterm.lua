@@ -17,8 +17,21 @@ config.colors = {
     cursor_bg = '#8db3ba',
     cursor_fg = '#0b0f0f',
 }
-config.initial_cols = 212
-config.initial_rows = 50
+-- config.initial_cols = 212
+-- config.initial_rows = 50
+
+wezterm.on("gui-startup", function(cmd)
+	local screen = wezterm.gui.screens().main
+	local width_ratio = 0.95
+    local height_ratio = 0.85
+	local width, height = screen.width * width_ratio, screen.height * height_ratio
+	local tab, pane, window = wezterm.mux.spawn_window(cmd or {
+		position = { x = (screen.width - width) / 2, y = (screen.height - height) / 2 },
+	})
+	-- window:gui_window():maximize()
+	window:gui_window():set_inner_size(width, height)
+end)
+
 config.window_background_opacity = 0.97
 
 config.enable_scroll_bar = true
@@ -63,10 +76,25 @@ config.keys = {
     action = act.ActivatePaneDirection 'Down',
   },
   {
+    key = '[',
+    mods = 'SUPER',
+    action = act.ActivatePaneDirection 'Prev',
+  },
+  {
+    key = ']',
+    mods = 'SUPER',
+    action = act.ActivatePaneDirection 'Next',
+  },
+  {
     key = 'w',
     mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane { confirm = true },
-  }
+    action = act.CloseCurrentPane { confirm = true },
+  },
+  {
+    key = 'f',
+    mods = 'SUPER',
+    action = act.Search { CaseInSensitiveString = '' },
+  },
 }
 
 
