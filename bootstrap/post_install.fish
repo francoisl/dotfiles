@@ -2,5 +2,8 @@
 echo /usr/local/bin/fish | sudo tee -a /etc/shells
 chsh -s /usr/local/bin/fish
 
-# Restore some OMF configs
-ln -s ~/code/dotfiles/omf/key_bindings.fish ~/.config/omf/key_bindings.fish
+# Set up config files
+mkdir -p ~/.config/wezterm
+mkdir ~/.hammerspoon
+ln -s ~/code/dotfiles/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
+ln -s ~/code/dotfiles/hammerspoon/init.lua ~/.hammerspoon/init.lua
