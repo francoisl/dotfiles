@@ -32,7 +32,80 @@ wezterm.on("gui-startup", function(cmd)
 	window:gui_window():set_inner_size(width, height)
 end)
 
+
+config.window_decorations = "RESIZE"
+-- The filled in variant of the < symbol
+local SOLID_LEFT_ARROW = wezterm.nerdfonts.ple_left_half_circle_thick
+-- pl_right_hard_divider
+
+-- The filled in variant of the > symbol
+local SOLID_RIGHT_ARROW = wezterm.nerdfonts.ple_right_half_circle_thick
+-- pl_left_hard_divider
+
+-- This function returns the suggested title for a tab.
+-- It prefers the title that was set via `tab:set_title()`
+-- or `wezterm cli set-tab-title`, but falls back to the
+-- title of the active pane in that tab.
+function tab_title(tab_info)
+  local title = tab_info.tab_title
+  -- if the tab title is explicitly set, take that
+  if title and #title > 0 then
+    return title
+  end
+  -- Otherwise, use the title from the active pane
+  -- in that tab
+  return tab_info.active_pane.title
+end
+
+wezterm.on(
+  'format-tab-title',
+  function(tab, tabs, panes, config, hover, max_width)
+    local edge_background = '#25242b'
+    local background = '#25242b'
+    local foreground = '#BCBCBC'
+
+    if tab.is_active then
+      edge_background = '#2f5180'
+      background = '#2f5180'
+      foreground = '#E4E4E4'
+    end
+
+    local edge_foreground = background
+
+    local title = tab_title(tab)
+
+    -- ensure that the titles fit in the available space,
+    -- and that we have room for the edges.
+    -- title = wezterm.truncate_right(title, max_width - 2)
+
+    return {
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = edge_foreground } },
+      { Text = SOLID_LEFT_ARROW },
+      { Background = { Color = background } },
+      { Foreground = { Color = foreground } },
+      { Text = title },
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = edge_foreground } },
+      { Text = SOLID_RIGHT_ARROW },
+    }
+  end
+)
+
+
+-- config.window_background_image = '/Users/francois/Desktop/recordings/term.png'
+config.window_background_image_hsb = {
+  brightness = 0.05,
+  hue = 1,
+  saturation = 1,
+}
+
+
 config.window_background_opacity = 0.97
+config.inactive_pane_hsb = {
+  saturation = 0.6,
+  brightness = 0.5,
+}
 
 config.enable_scroll_bar = true
 
