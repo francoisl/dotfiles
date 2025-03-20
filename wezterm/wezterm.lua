@@ -32,15 +32,9 @@ wezterm.on("gui-startup", function(cmd)
 	window:gui_window():set_inner_size(width, height)
 end)
 
-
 config.window_decorations = "RESIZE"
--- The filled in variant of the < symbol
-local SOLID_LEFT_ARROW = wezterm.nerdfonts.ple_left_half_circle_thick
--- pl_right_hard_divider
 
--- The filled in variant of the > symbol
-local SOLID_RIGHT_ARROW = wezterm.nerdfonts.ple_right_half_circle_thick
--- pl_left_hard_divider
+-- Tab coloring --
 
 -- This function returns the suggested title for a tab.
 -- It prefers the title that was set via `tab:set_title()`
@@ -57,41 +51,90 @@ function tab_title(tab_info)
   return tab_info.active_pane.title
 end
 
-wezterm.on(
-  'format-tab-title',
-  function(tab, tabs, panes, config, hover, max_width)
-    local edge_background = '#25242b'
-    local background = '#25242b'
-    local foreground = '#BCBCBC'
 
-    if tab.is_active then
-      edge_background = '#2f5180'
-      background = '#2f5180'
-      foreground = '#E4E4E4'
+local function get_cwd(tab)
+    return tab.active_pane.current_working_dir.file_path or ""
+end
+
+-- Remove all path components and return only the last value
+local function remove_abs_path(path) return path:gsub("(.*[/\\])(.*)", "%2") end
+
+-- Return the pretty path of the tab's current working directory
+local function get_display_cwd(tab)
+    local current_dir = get_cwd(tab)
+    local HOME_DIR = string.format("file://%s", os.getenv("HOME"))
+    return current_dir == HOME_DIR and "~/" or remove_abs_path(current_dir)
+end
+
+local function format_title(tab)
+    local cwd = get_display_cwd(tab)
+
+    local active_title = tab.active_pane.title
+
+    local description = (not active_title or active_title == cwd) and "~" or active_title
+    return string.format(" %s ", description)
+end
+
+local function has_unseen_output(tab)
+    if not tab.is_active then
+        for _, pane in ipairs(tab.panes) do
+            if pane.has_unseen_output then return true end
+        end
+    end
+    return false
+end
+
+-- Returns manually set title (from `tab:set_title()` or `wezterm cli set-tab-title`) or creates a new one
+local function get_tab_title(tab)
+    local title = tab.tab_title
+    if title and #title > 0 then return title end
+    return format_title(tab)
+end
+
+local function string_to_color(str)
+    -- Convert the string to a unique integer
+    local hash = 0
+    for i = 1, #str do
+        hash = string.byte(str, i) + ((hash << 5) - hash)
     end
 
-    local edge_foreground = background
+    -- Convert the integer to a unique color
+    local c = string.format("%06X", hash & 0x00FFFFFF)
+    return "#" .. (string.rep("0", 6 - #c) .. c):upper()
+end
 
-    local title = tab_title(tab)
+local function select_contrasting_fg_color(hex_color)
+    -- Note: this could use `return color:complement_ryb()` instead if you prefer or other builtins!
 
-    -- ensure that the titles fit in the available space,
-    -- and that we have room for the edges.
-    -- title = wezterm.truncate_right(title, max_width - 2)
+    local color = wezterm.color.parse(hex_color)
+    ---@diagnostic disable-next-line: unused-local
+    local lightness, _a, _b, _alpha = color:laba()
+    if lightness > 55 then
+        return "#000000" -- Black has higher contrast with colors perceived to be "bright"
+    end
+    return "#FFFFFF" -- White has higher contrast
+end
 
+wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+    local title = get_tab_title(tab)
+    local color = string_to_color(get_cwd(tab))
+    local fg_color = select_contrasting_fg_color(color)
+    local prefix = ""
+
+    if tab.is_active then
+      -- prefix = wezterm.nerdfonts.cod_triangle_right
+      prefix = wezterm.nerdfonts.fa_chevron_right
+    end
+    if has_unseen_output(tab) then
+      prefix = wezterm.nerdfonts.cod_bell_dot
+    end
     return {
-      { Background = { Color = edge_background } },
-      { Foreground = { Color = edge_foreground } },
-      { Text = SOLID_LEFT_ARROW },
-      { Background = { Color = background } },
-      { Foreground = { Color = foreground } },
+      { Background = { Color = color } },
+      { Foreground = { Color = fg_color } },
+      { Text = prefix },
       { Text = title },
-      { Background = { Color = edge_background } },
-      { Foreground = { Color = edge_foreground } },
-      { Text = SOLID_RIGHT_ARROW },
     }
-  end
-)
-
+end)
 
 -- config.window_background_image = '/Users/francois/Desktop/recordings/term.png'
 config.window_background_image_hsb = {
