@@ -51,7 +51,6 @@ function tab_title(tab_info)
   return tab_info.active_pane.title
 end
 
-
 local function get_cwd(tab)
     return tab.active_pane.current_working_dir.file_path or ""
 end
@@ -91,7 +90,7 @@ local function get_tab_title(tab)
     return format_title(tab)
 end
 
-local function string_to_color(str)
+local function string_to_color(str, isActive)
     -- Convert the string to a unique integer
     local hash = 0
     for i = 1, #str do
@@ -100,13 +99,17 @@ local function string_to_color(str)
 
     -- Convert the integer to a unique color
     local c = string.format("%06X", hash & 0x00FFFFFF)
-    return "#" .. (string.rep("0", 6 - #c) .. c):upper()
+    local color = wezterm.color.parse("#" .. (string.rep("0", 6 - #c) .. c):upper())
+
+    if not isActive then
+        color = color:darken(0.4)
+    end
+    return color
 end
 
-local function select_contrasting_fg_color(hex_color)
+local function select_contrasting_fg_color(color)
     -- Note: this could use `return color:complement_ryb()` instead if you prefer or other builtins!
 
-    local color = wezterm.color.parse(hex_color)
     ---@diagnostic disable-next-line: unused-local
     local lightness, _a, _b, _alpha = color:laba()
     if lightness > 55 then
@@ -117,8 +120,9 @@ end
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
     local title = get_tab_title(tab)
-    local color = string_to_color(get_cwd(tab))
+    local color = string_to_color(get_cwd(tab), tab.is_active)
     local fg_color = select_contrasting_fg_color(color)
+    -- local fg_color = "white"
     local prefix = ""
 
     if tab.is_active then
