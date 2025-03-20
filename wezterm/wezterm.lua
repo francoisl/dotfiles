@@ -101,13 +101,25 @@ config.window_background_image_hsb = {
 }
 
 
-config.window_background_opacity = 0.97
+config.window_background_opacity = 0.976
 config.inactive_pane_hsb = {
   saturation = 0.6,
   brightness = 0.5,
 }
 
+wezterm.on('toggle-opacity', function(window, pane)
+  local overrides = window:get_config_overrides() or {}
+  if not overrides.window_background_opacity then
+    overrides.window_background_opacity = 0.7
+  else
+    overrides.window_background_opacity = nil
+  end
+  window:set_config_overrides(overrides)
+end)
+
+
 config.enable_scroll_bar = true
+config.scrollback_lines = 500000
 
 config.keys = {
   {
@@ -167,6 +179,11 @@ config.keys = {
     key = 'f',
     mods = 'SUPER',
     action = act.Search { CaseInSensitiveString = '' },
+  },
+  {
+    key = 'u',
+    mods = 'SUPER',
+    action = act.EmitEvent 'toggle-opacity',
   },
 }
 
