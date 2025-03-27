@@ -47,5 +47,9 @@ set -U tide_ruby_bg_color B30975 # B31209
 set -U tide_cmd_duration_bg_color DA627D # C4A000
 set -U tide_cmd_duration_icon 󱑂 # 
 
+### HCP auth & set env variable
+# hcp auth login
+# set -Ux VAGRANT_CLOUD_TOKEN (hcp auth print-access-token)
+
 # Backup icons btf
 ##      | 
