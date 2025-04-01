@@ -3,7 +3,7 @@ local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 local act = wezterm.action
 
--- Set fish as our default shell. Not needed after chsh
+-- Set fish as the default shell. Not needed after chsh
 -- config.default_prog = { '/opt/homebrew/bin/fish', '-l' }
 
 -- Set font, disable ligatures
@@ -231,6 +231,11 @@ config.keys = {
     key = 'u',
     mods = 'SUPER',
     action = act.EmitEvent 'toggle-opacity',
+  },
+  {
+    key = 'Enter',
+    mods = 'SUPER|SHIFT',
+    action = act.TogglePaneZoomState,
   },
 }
 
