@@ -11,14 +11,12 @@ config.font = wezterm.font 'JetBrains Mono'
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
 
 -- Theme and color overrides
-config.color_scheme = 'nordfox'
+config.color_scheme = 'tokyonight'
 config.colors = {
-    background = '#25242b',
-    cursor_bg = '#8db3ba',
-    cursor_fg = '#0b0f0f',
+    background = '#1a1b26',
+    cursor_bg = '#8e91b1',
+    cursor_fg = '#12131a',
 }
--- config.initial_cols = 212
--- config.initial_rows = 50
 
 wezterm.on("gui-startup", function(cmd)
 	local screen = wezterm.gui.screens().main
