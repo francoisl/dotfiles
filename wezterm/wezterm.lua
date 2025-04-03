@@ -122,17 +122,22 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
     local fg_color = select_contrasting_fg_color(color)
     -- local fg_color = "white"
     local prefix = ""
+    local fullscreen_prefix = ""
+
 
     if tab.is_active then
-      -- prefix = wezterm.nerdfonts.cod_triangle_right
       prefix = wezterm.nerdfonts.fa_chevron_right
     end
     if has_unseen_output(tab) then
       prefix = wezterm.nerdfonts.cod_bell_dot
     end
+    if tab.active_pane.is_zoomed then
+      fullscreen_prefix = wezterm.nerdfonts.cod_screen_full
+    end
     return {
       { Background = { Color = color } },
       { Foreground = { Color = fg_color } },
+      { Text = fullscreen_prefix },
       { Text = prefix },
       { Text = title },
     }
@@ -147,6 +152,7 @@ config.window_background_image_hsb = {
 
 
 config.window_background_opacity = 0.976
+config.macos_window_background_blur = 5
 config.inactive_pane_hsb = {
   saturation = 0.6,
   brightness = 0.5,
@@ -156,7 +162,11 @@ wezterm.on('toggle-opacity', function(window, pane)
   local overrides = window:get_config_overrides() or {}
   if not overrides.window_background_opacity then
     overrides.window_background_opacity = 0.7
+  elseif overrides.window_background_opacity == 0.7 then
+    overrides.window_background_opacity = 0.4
+    overrides.macos_window_background_blur = 0
   else
+    overrides.macos_window_background_blur = nil
     overrides.window_background_opacity = nil
   end
   window:set_config_overrides(overrides)
@@ -236,6 +246,5 @@ config.keys = {
     action = act.TogglePaneZoomState,
   },
 }
-
 
 return config
