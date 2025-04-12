@@ -10,6 +10,9 @@ local act = wezterm.action
 config.font = wezterm.font 'JetBrains Mono'
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
 
+-- ------------------------------------------------------------------------------------
+-- General appearance
+-- ------------------------------------------------------------------------------------
 -- Theme and color overrides
 config.color_scheme = 'tokyonight'
 config.colors = {
@@ -18,6 +21,10 @@ config.colors = {
     cursor_fg = '#12131a',
 }
 
+config.enable_scroll_bar = true
+config.scrollback_lines = 500000
+
+-- Resize on startup
 wezterm.on("gui-startup", function(cmd)
 	local screen = wezterm.gui.screens().main
 	local width_ratio = 0.95
@@ -26,13 +33,10 @@ wezterm.on("gui-startup", function(cmd)
 	local tab, pane, window = wezterm.mux.spawn_window(cmd or {
 		position = { x = (screen.width - width) / 2, y = (screen.height - height) / 2 },
 	})
-	-- window:gui_window():maximize()
 	window:gui_window():set_inner_size(width, height)
 end)
-
 config.window_decorations = "RESIZE"
 
--- Tab coloring --
 
 -- This function returns the suggested title for a tab.
 -- It prefers the title that was set via `tab:set_title()`
@@ -150,7 +154,6 @@ config.window_background_image_hsb = {
   saturation = 1,
 }
 
-
 config.window_background_opacity = 0.976
 config.macos_window_background_blur = 5
 config.inactive_pane_hsb = {
@@ -172,9 +175,9 @@ wezterm.on('toggle-opacity', function(window, pane)
   window:set_config_overrides(overrides)
 end)
 
-
-config.enable_scroll_bar = true
-config.scrollback_lines = 500000
+-- ------------------------------------------------------------------------------------
+-- Key bindings
+-- ------------------------------------------------------------------------------------
 
 config.keys = {
   {
