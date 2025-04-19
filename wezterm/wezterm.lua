@@ -248,6 +248,16 @@ config.keys = {
     mods = 'SUPER|SHIFT',
     action = act.TogglePaneZoomState,
   },
+  {
+    key = '}',
+    mods = 'SHIFT|CTRL',
+    action = act.MoveTabRelative(1),
+  },
+  {
+    key = '{',
+    mods = 'SHIFT|CTRL',
+    action = act.MoveTabRelative(-1),
+  }
 }
 
 return config
