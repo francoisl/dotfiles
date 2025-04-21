@@ -2,6 +2,7 @@ local wezterm = require 'wezterm'
 
 local config = wezterm.config_builder()
 local act = wezterm.action
+local mux = wezterm.mux
 
 -- Set fish as the default shell. Not needed after chsh
 -- config.default_prog = { '/opt/homebrew/bin/fish', '-l' }
@@ -27,16 +28,82 @@ config.scrollback_lines = 500000
 -- Resize on startup
 wezterm.on("gui-startup", function(cmd)
 	local screen = wezterm.gui.screens().main
-	local width_ratio = 0.95
-    local height_ratio = 0.85
+	local width_ratio = 0.97
+    local height_ratio = 0.89
 	local width, height = screen.width * width_ratio, screen.height * height_ratio
-	local tab, pane, window = wezterm.mux.spawn_window(cmd or {
+
+    local project_dir = wezterm.home_dir .. '/Expensidev'
+    local args = {}
+    if cmd then
+        args = cmd.args
+    end
+
+    -- Spawn and set up tabs
+    -- Tab 1: Web-E
+	local tab, pane1, window = mux.spawn_window(cmd or {
 		position = { x = (screen.width - width) / 2, y = (screen.height - height) / 2 },
+		cwd = project_dir .. '/Web-Expensify'
 	})
 	window:gui_window():set_inner_size(width, height)
+
+    -- Tab 2: vssh / scripts
+    local _, tab2_tl, _ = window:spawn_tab {
+        cwd = project_dir
+    }
+    local tab2_bl = tab2_tl:split { direction = 'Bottom' }
+    local tab2_br = tab2_bl:split { direction = 'Right' }
+    local tab2_tr = tab2_tl:split { direction = 'Right' }
+    tab2_tl:send_text 'vssh\n'
+    tab2_bl:send_text 'vssh\n'
+    tab2_tr:send_text './script/sql.sh\n'
+    tab2_br:send_text './script/bedrocksql.sh\n'
+
+    -- Tab 3:
+    local _, tab3, _ = window:spawn_tab {}
+
+    -- Tab 4: IS
+    local _, tab4, _ = window:spawn_tab {
+        cwd = project_dir .. '/Integration-Server'
+    }
+
+    -- Tab 5: App
+    local _, tab5, _ = window:spawn_tab {
+        cwd = project_dir .. '/App'
+    }
+    local tab5_tr = tab5:split {
+        direction = 'Right',
+        size = 0.2
+    }
+    local tab5_br = tab5_tr:split {
+        direction = 'Bottom',
+        size = 0.35
+    }
+    tab5_tr:send_text 'nw '
+    tab5_br:send_text '../script/ngrok.sh francois'
+
+    -- Tab 6: Auth
+    local _, tab6, _ = window:spawn_tab {
+        cwd = project_dir .. '/Auth'
+    }
+    local tab6_tr = tab6:split {
+        direction = 'Right',
+        size = 0.33
+    }
+    local tab6_tm = tab6_tr:split {
+        direction = 'Bottom',
+        size = 0.75
+    }
+    local tab6_tb = tab6_tm:split {
+        direction = 'Bottom',
+        size = 0.9
+    }
+    tab6_tr:send_text 'vssh\n'
+    tab6_tm:send_text 'vssh\n'
+    tab6_tb:send_text 'vssh\n'
+
+    pane1:activate()
 end)
 config.window_decorations = "RESIZE"
-
 
 -- This function returns the suggested title for a tab.
 -- It prefers the title that was set via `tab:set_title()`
