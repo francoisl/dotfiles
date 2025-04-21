@@ -1,4 +1,5 @@
 .DS_Store
 .DS_Store?
 ._*
-iTerm2/com.googlecode.iterm2.plist
+*/.idea/*
+*.iml
