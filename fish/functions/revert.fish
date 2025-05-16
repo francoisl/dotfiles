@@ -1,5 +1,5 @@
 function revert --description 'Revert a PR'
-    argparse 'no-new-branch' -- $argv
+    argparse 'no-new-branch' 'no-edit' -- $argv
     set -l prNumber $argv[1]
 
     if set -q _flag_no_new_branch
@@ -17,7 +17,7 @@ function revert --description 'Revert a PR'
 
     # Create the revert branch if we're not on it
     if test (git rev-parse --abbrev-ref HEAD) != $revertBranchName
-        git checkout main
+        git checkout main 2>/dev/null
         git checkout -b $revertBranchName
     end
 
@@ -29,7 +29,8 @@ function revert --description 'Revert a PR'
         return 1
     end
 
-    git revert -m 1 $mergeCommit
+    git revert $_flag_no_edit -m 1 $mergeCommit
 end
 
 complete -c revert -l no-new-branch -d 'Create the revert commit on the current branch'
+complete -c revert -l no-edit -d 'Do not use the commit message editor'
