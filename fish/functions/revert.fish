@@ -34,3 +34,4 @@ end
 
 complete -c revert -l no-new-branch -d 'Create the revert commit on the current branch'
 complete -c revert -l no-edit -d 'Do not use the commit message editor'
+complete -c revert -f -a "(git log --merges --oneline | head -50 | rg -o 'Merge pull request #(\\d+)' -r '\$1')"
