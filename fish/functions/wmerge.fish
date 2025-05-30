@@ -3,7 +3,8 @@ function wmerge
     argparse --min-args=1 -- $argv
     or begin
         echo "Missing argument: PR number"
-        return
+        echo "Usage: "(status current-command)" [-r|--repo <org/repo>] <prNumber>"
+        return 1
     end
 
     if set -ql _flag_repo
@@ -21,21 +22,21 @@ function wmerge
     echo "👀 Checking PR status - $watchCommand"
     command $watchCommand
     or begin
-        echo "Error checking PR status : $status"
-        return 1
+        set -l err $status
+        echo "Error checking PR status"
+        return $err
     end
 
-    set mergeCommand gh pr merge $prNumber
+    set -l mergeCommand gh pr merge $prNumber
     if set -ql _flag_repo
         set -a mergeCommand --repo $_flag_repo
     end
 
-    echo ""
-    echo "🚀 Checks passed, merging PR - $mergeCommand"
-    command $mergeCommand
-    and echo -e "\n✅ PR $prNumber merged successfully"
-    or echo -e "\n❌ Failed to merge PR $prNumber"
-    return $status
+    echo -e "\n🚀 Checks passed, merging PR - $mergeCommand"
+    #command $mergeCommand
+    #and echo -e "\n✅ PR $prNumber merged successfully"
+    #or echo -e "\n❌ Failed to merge PR $prNumber"
+    #return $status
 end
 
 # Completion for `-r`/`--repo` - lists available git repos as options, and pipes into fzf for convenience
