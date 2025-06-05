@@ -38,7 +38,7 @@ function wmerge
         if set -ql _flag_repo
             set -a mergeCommand --repo $_flag_repo
         end
-        set -a mergeCommand -m --auto
+        set -a mergeCommand -m
 
         echo "Merging command - $mergeCommand"
         command $mergeCommand
