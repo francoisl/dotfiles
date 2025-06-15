@@ -22,6 +22,22 @@ config.colors = {
     cursor_fg = '#12131a',
 }
 
+--config.default_cursor_style = 'BlinkingBlock'
+--config.cursor_blink_rate = 1000
+--config.cursor_blink_ease_in = 'EaseIn'
+--config.cursor_blink_ease_out = 'Linear'
+
+config.visual_bell = {
+  fade_in_function = 'EaseIn',
+  fade_in_duration_ms = 100,
+  fade_out_function = 'EaseOut',
+  fade_out_duration_ms = 100,
+}
+config.colors = {
+  visual_bell = '#1c2329'
+  --visual_bell = '#444444'
+}
+
 config.enable_scroll_bar = true
 config.scrollback_lines = 500000
 
