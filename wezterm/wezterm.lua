@@ -251,6 +251,8 @@ wezterm.on('toggle-opacity', function(window, pane)
   elseif overrides.window_background_opacity == 0.7 then
     overrides.window_background_opacity = 0.4
     overrides.macos_window_background_blur = 0
+  elseif overrides.window_background_opacity == 0.4 then
+    overrides.window_background_opacity = 1
   else
     overrides.macos_window_background_blur = nil
     overrides.window_background_opacity = nil
