@@ -1,4 +1,3 @@
-abbr -a -- 2f '2fa expensify | pbcopy'
 abbr -a -- ad 'git add'
 abbr -a -- adu 'git add -u'
 abbr -a -- br 'git br'
@@ -50,7 +49,7 @@ abbr -a --set-cursor='%' -- ciam 'git commit -am "%"'
 abbr -a --function abbr_pu -- pu
 abbr -a --set-cursor='%' -- rrg 'rg -Fi "%" ./*'
 abbr -a -- gpoms 'git pull origin main --autostash'
-abbr -a --set-cursor='%' -- rge rg\ --glob\ \'\*.\%\'
+abbr -a --set-cursor='%' -- rge "rg --glob '*.%'"
 abbr -a -- npret 'npm run prettier'
 abbr -a -- gc 'gh pr checkout'
 abbr -a -- nlf 'npm run lint -- --fix'
@@ -60,3 +59,5 @@ abbr -a -- pdt 'TZ=America/Los_Angeles date'
 abbr -a -- ni 'npm i'
 abbr -a -- nio 'npm run ios'
 abbr -a --regex .+-api --position anywhere --set-cursor=! --function api_command -- dev-api
+abbr -a -- 2f 'op --account=$1PWD_ACCOUNT_PERSONAL item get Expensify --otp | pbcopy'
+abbr -a -- sts 'git status --short --branch'
