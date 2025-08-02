@@ -26,12 +26,15 @@
     path = ~/.gitconfig.local
 [commit]
     gpgsign = true
+    verbose = true
 [core]
     pager = diff-so-fancy | less --tabs=4 -RFX
-    editor = /usr/bin/vim
+    editor = nvim
 [diff-so-fancy]
     markEmptyLines = true
     changeHunkIndicators = true
     stripLeadingSymbols = true
 [pull]
     rebase = false
+[branch]
+    sort = -committerdate
