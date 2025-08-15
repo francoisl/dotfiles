@@ -3,7 +3,11 @@ function _tide_item_git
         git rev-parse --git-dir --is-inside-git-dir | read -fL gdir in_gdir
 
         # Don't show branch name for 'main'
-        if [ "main" = $location ]; set location ''; else; set location ' '$location; end
+        if [ main = $location ]
+            set location ''
+        else
+            set location ' '$location
+        end
 
         set location $_tide_location_color$location
     else if test $pipestatus[1] != 0
@@ -54,7 +58,7 @@ function _tide_item_git
 (0|(?<dirty>.*))\n(0|(?<untracked>.*))(\n(0|(?<behind>.*))\t(0|(?<ahead>.*)))?' \
         "$(git $_set_dir_opt stash list 2>/dev/null | count
         string match -r ^UU $stat | count
-        string match -r ^[ADMR]. $stat | count
+        string match -r ^[ADMR] $stat | count
         string match -r ^.[ADMR] $stat | count
         string match -r '^\?\?' $stat | count
         git rev-list --count --left-right @{upstream}...HEAD 2>/dev/null)"
