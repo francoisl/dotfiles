@@ -10,6 +10,7 @@ local mux = wezterm.mux
 -- Set font, disable ligatures
 config.font = wezterm.font("JetBrains Mono")
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+config.font_size = 12.4
 
 -- ------------------------------------------------------------------------------------
 -- General appearance
