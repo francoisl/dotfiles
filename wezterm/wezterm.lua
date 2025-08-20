@@ -19,14 +19,15 @@ config.font_size = 12.4
 config.color_scheme = "tokyonight"
 config.colors = {
     background = "#1a1b26",
-    cursor_bg = "#8e91b1",
-    cursor_fg = "#12131a",
+    --cursor_bg = "#8e91b1",
+    --cursor_fg = "#12131a",
 }
 
---config.default_cursor_style = 'BlinkingBlock'
---config.cursor_blink_rate = 1000
---config.cursor_blink_ease_in = 'EaseIn'
---config.cursor_blink_ease_out = 'Linear'
+config.default_cursor_style = 'BlinkingBlock'
+config.cursor_blink_rate = 500
+config.cursor_blink_ease_in = {CubicBezier={0.0, 0.0, 0.22, 1.0}}
+config.cursor_blink_ease_out = 'Constant'
+config.force_reverse_video_cursor = true
 
 config.visual_bell = {
     fade_in_function = "EaseIn",
