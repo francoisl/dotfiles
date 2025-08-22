@@ -115,9 +115,9 @@ wezterm.on("gui-startup", function(cmd)
         direction = "Bottom",
         size = 0.9,
     })
-    tab6_tr:send_text("vssh\n")
-    tab6_tm:send_text("vssh\n")
-    tab6_tb:send_text("vssh\n")
+    tab6_tr:send_text("vssh")
+    tab6_tm:send_text("vssh")
+    tab6_tb:send_text("vssh")
 
     pane1:activate()
 end)
