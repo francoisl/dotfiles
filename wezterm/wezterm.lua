@@ -24,8 +24,8 @@ config.colors = {
 }
 
 config.default_cursor_style = 'BlinkingBlock'
-config.cursor_blink_rate = 500
-config.cursor_blink_ease_in = {CubicBezier={0.0, 0.0, 0.22, 1.0}}
+config.cursor_blink_rate = 444
+config.cursor_blink_ease_in = {CubicBezier={0.25, 0.46, 0.45, 0.94}}
 config.cursor_blink_ease_out = 'Constant'
 config.force_reverse_video_cursor = true
 
