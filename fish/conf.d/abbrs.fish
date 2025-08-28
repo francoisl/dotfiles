@@ -61,3 +61,5 @@ abbr -a -- nio 'npm run ios'
 abbr -a --regex .+-api --position anywhere --set-cursor=! --function api_command -- dev-api
 abbr -a -- 2f 'op --account=$1PWD_ACCOUNT_PERSONAL item get Expensify --otp | pbcopy'
 abbr -a -- sts 'git status --short --branch'
+abbr -a -- c claude
+abbr -a -- cr 'claude --resume'
