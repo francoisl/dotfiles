@@ -27,7 +27,7 @@ function wmerge
     # Beep a few times to notify checks are done
     for i in (seq 3); echo -n \a; sleep 0.1; end
     if test -f ~/code/dotfiles/misc/sounds/wololo.mp3
-        afplay ~/code/dotfiles/misc/sounds/wololo.mp3
+        afplay ~/code/dotfiles/misc/sounds/wololo.mp3 &
     end
 
     if not test $err = 0
