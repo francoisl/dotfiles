@@ -63,3 +63,4 @@ abbr -a -- 2f 'op --account=$1PWD_ACCOUNT_PERSONAL item get Expensify --otp | pb
 abbr -a -- sts 'git status --short --branch'
 abbr -a -- c claude
 abbr -a -- cr 'claude --resume'
+abbr -a --set-cursor='%' -- vgrep 'nvim -q (rg --vimgrep % --color=never | psub) -c copen'
