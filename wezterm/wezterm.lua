@@ -371,4 +371,13 @@ config.mouse_bindings = {
     },
 }
 
+config.quick_select_patterns = {
+    -- Default patterns are automatically included.
+    -- Add a pattern for email addresses
+    '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b',
+
+    -- Simplified pattern for files, even without a path prefix
+    "[^\\s\\/]+\\.[A-Za-z0.9]{1,5}+",
+}
+
 return config
