@@ -64,3 +64,4 @@ abbr -a -- sts 'git status --short --branch'
 abbr -a -- c claude
 abbr -a -- cr 'claude --resume'
 abbr -a --set-cursor='%' -- vgrep 'nvim -q (rg --vimgrep % --color=never | psub) -c copen'
+abbr -a -- bro 'git br | fzf | xargs git co'
