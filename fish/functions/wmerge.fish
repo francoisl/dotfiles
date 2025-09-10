@@ -1,10 +1,10 @@
 # Use the `gh` CLI tool to watch checks on a pull request, and merge when tests pass
 function wmerge
-    argparse 'r/repo=' 'w/watch-only' -- $argv
+    argparse 'r/repo=' 'w/watch-only' 'f/full' -- $argv
     argparse --min-args=1 -- $argv
     or begin
         echo "Missing argument: PR number"
-        echo "Usage: "(status current-command)" [-r|--repo <org/repo>] [-w|--watch-only] <prNumber>"
+        echo "Usage: "(status current-command)" [-r|--repo <org/repo>] [-w|--watch-only] [-f|--full] <prNumber>"
         return 1
     end
 
@@ -18,7 +18,10 @@ function wmerge
     if set -ql _flag_repo
         set -a watchCommand --repo $_flag_repo
     end
-    set -a watchCommand --watch --fail-fast -i 4
+    if not set -ql _flag_full
+        set -a watchCommand --fail-fast
+    end
+    set -a watchCommand --watch -i 4
 
     echo "👀 Checking PR status - $watchCommand"
     command $watchCommand
@@ -52,6 +55,7 @@ end
 
 
 complete -c wmerge -f -s w -l watch-only -d "Watch only, don't merge"
+complete -c wmerge -f -s f -l full -d "Wait for all tests to complete, regardless of any one failing"
 
 # Completion for `-r`/`--repo` - lists available git repos as options, and pipes into fzf for convenience
 if functions -q list_git_repos; and command -q fzf
