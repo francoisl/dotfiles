@@ -1,13 +1,14 @@
 # PATH modifications
 fish_add_path /opt/homebrew/opt/curl/bin
 fish_add_path /usr/local/bin ~/.rbenv/shims ~/.pyenv/shims
+fish_add_path -p $HOME/.local/bin
 
 # Android SDK
 set -x ANDROID_HOME $HOME/Library/Android/sdk/
 fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/tools $ANDROID_HOME/tools/bin
 
 # Set default node version (fast-nvm-fish)
-nvm use 20.19.1 >/dev/null
+nvm use 20.19.4 >/dev/null
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
@@ -28,12 +29,12 @@ set -g EXTRA_CERTS $HOME/Expensidev/Ops-Configs/saltfab/cacert.pem
 ### Node export for scripts
 set -x NODE_EXTRA_CA_CERTS $EXTRA_CERTS
 set -x AWS_CA_BUNDLE $EXTRA_CERTS
-#set -x SSL_CERT_FILE $EXTRA_CERTS
-#set -x CURL_CA_BUNDLE $EXTRA_CERTS
+set -x SSL_CERT_FILE $EXTRA_CERTS
+set -x CURL_CA_BUNDLE $EXTRA_CERTS
 set -x BUNDLE_SSL_CA_CERT $EXTRA_CERTS
 set -x REQUESTS_CA_BUNDLE $EXTRA_CERTS
 
-set -gx EDITOR vim
+set -gx EDITOR nvim
 
 # Interactive shell init
 if status is-interactive
