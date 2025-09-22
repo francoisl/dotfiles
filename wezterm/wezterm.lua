@@ -350,6 +350,12 @@ config.keys = {
         mods = "SHIFT|CTRL",
         action = act.MoveTabRelative(-1),
     },
+    {
+        -- New line for Shift+Enter, mostly for Claude code
+        key = "Enter",
+        mods = "SHIFT",
+        action = act.SendString '\x1b\r'
+    }
 }
 
 config.mouse_bindings = {
