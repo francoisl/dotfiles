@@ -8,5 +8,9 @@ function lw --description 'Watch logs on remote servers, then notify'
     set -l regex (string join '|' $argv)
     set -l match_count (count $argv)
 
-    echo "tail -F /var/log/syslog | grep -m$match_count --line-buffered -E \"($regex).*Job complete\"; exit"
+    set -l ssh_command "tail -F /var/log/syslog | grep -m$match_count --line-buffered -E \"($regex).*Job complete\$\"; exit"
+    set -l logCommand "ssh log1 '$ssh_command'; _fl_notify 'Done'"
+
+    echo $logCommand
+    eval $logCommand
 end
