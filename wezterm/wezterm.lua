@@ -267,6 +267,16 @@ wezterm.on("toggle-opacity", function(window, pane)
     window:set_config_overrides(overrides)
 end)
 
+wezterm.on("toggle-tab-bar", function(window, pane)
+    local overrides = window:get_config_overrides() or {}
+    if overrides.enable_tab_bar == false then
+        overrides.enable_tab_bar = nil
+    else
+        overrides.enable_tab_bar = false
+    end
+    window:set_config_overrides(overrides)
+end)
+
 -- ------------------------------------------------------------------------------------
 -- Key bindings
 -- ------------------------------------------------------------------------------------
@@ -355,6 +365,11 @@ config.keys = {
         key = "Enter",
         mods = "SHIFT",
         action = act.SendString '\x1b\r'
+    },
+    {
+        key = "b",
+        mods = "SUPER",
+        action = act.EmitEvent("toggle-tab-bar"),
     }
 }
 
@@ -385,5 +400,7 @@ config.quick_select_patterns = {
     -- Simplified pattern for files, even without a path prefix
     "[^\\s\\/]+\\.[A-Za-z0.9]{1,5}+",
 }
+
+config.notification_handling = "AlwaysShow"
 
 return config
