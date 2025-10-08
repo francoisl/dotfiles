@@ -1,33 +1,34 @@
 {
-    "statusLine": {
-        "type": "command",
-        "command": "~/code/dotfiles/claude/statusline.sh",
-        "padding": 0
-    },
-    "cleanupPeriodDays": 99999,
-    "permissions": {
-        "allow": [
-            "Bash(find:*)",
-            "Bash(gh issue list:*)",
-            "Bash(gh issue view:*)",
-            "Bash(gh pr diff:*)",
-            "Bash(gh pr list:*)",
-            "Bash(gh pr view:*)",
-            "Bash(git checkout:*)",
-            "Bash(grep:*)",
-            "Bash(mvn clean:*)",
-            "Bash(mvn package:*)",
-            "Bash(mvn test:*)",
-            "Bash(npm run lint)",
-            "Bash(npm run lint-changed)",
-            "Bash(rg:*)",
-            "Bash(source:*)",
-            "Bash(vssh:*)",
-            "Edit",
-            "WebFetch(domain:github.com)",
-            "WebSearch"
-        ],
-        "deny": [],
-        "ask": []
-    }
+  "cleanupPeriodDays": 99999,
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git checkout:*)",
+      "Bash(grep:*)",
+      "Bash(mvn clean:*)",
+      "Bash(mvn package:*)",
+      "Bash(mvn test:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint-changed)",
+      "Bash(rg:*)",
+      "Bash(source:*)",
+      "Bash(vssh:*)",
+      "Edit",
+      "WebFetch(domain:github.com)",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/code/dotfiles/claude/statusline.sh",
+    "padding": 0
+  },
+  "alwaysThinkingEnabled": true
 }
