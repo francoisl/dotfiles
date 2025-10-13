@@ -20,7 +20,8 @@
       "Bash(vssh:*)",
       "Edit",
       "WebFetch(domain:github.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
