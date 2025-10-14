@@ -35,6 +35,7 @@ set -x BUNDLE_SSL_CA_CERT $EXTRA_CERTS
 set -x REQUESTS_CA_BUNDLE $EXTRA_CERTS
 
 set -gx EDITOR nvim
+set -gx RIPGREP_CONFIG_PATH ~/.ripgreprc
 
 # Interactive shell init
 if status is-interactive

@@ -1,0 +1,15 @@
+# Ripgrep configuration file
+
+# Search hidden files and directories by default
+--hidden
+
+# Use smart case (case-insensitive if pattern is all lowercase)
+--smart-case
+
+# Limit column width for readability
+--max-columns=150
+--max-columns-preview
+
+# Follow symbolic links
+--follow
+
