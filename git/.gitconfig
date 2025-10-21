@@ -19,6 +19,7 @@
     addd = add
     t = status
     s = status
+    branches = "for-each-ref --sort=-committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"
 [color]
     ui = true
 # separate file for user name / email / etc.
@@ -38,3 +39,5 @@
     rebase = false
 [branch]
     sort = -committerdate
+[init]
+	defaultBranch = main

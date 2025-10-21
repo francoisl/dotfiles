@@ -31,6 +31,7 @@ mkdir -p ~/.config/fish
 mkdir -p ~/.config/nvim/lua/config
 mkdir -p ~/.config/kitty
 mkdir -p ~/.hammerspoon
+mkdir -p ~/.claude
 
 # Symlink terminal configs
 safe_symlink $DOTFILES_DIR/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
@@ -60,6 +61,10 @@ safe_symlink $DOTFILES_DIR/kitty/font-nerd-symbols.conf ~/.config/kitty/font-ner
 
 # Symlink Vim config
 safe_symlink $DOTFILES_DIR/vim/.vimrc ~/.vimrc
+
+# Symlink Claude Code config
+safe_symlink $DOTFILES_DIR/claude/settings.json ~/.claude/settings.json
+safe_symlink $DOTFILES_DIR/claude/statusline.sh ~/.claude/statusline.sh
 
 echo ""
 echo "✓ Config file symlinks complete!"
