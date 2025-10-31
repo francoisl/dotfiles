@@ -21,10 +21,14 @@
       "Edit",
       "WebFetch(domain:github.com)",
       "WebSearch",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(git diff:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
+    ]
   },
   "statusLine": {
     "type": "command",
