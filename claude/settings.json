@@ -3,6 +3,7 @@
   "permissions": {
     "allow": [
       "Bash(find:*)",
+      "Bash(fd:*)",
       "Bash(gh issue list:*)",
       "Bash(gh issue view:*)",
       "Bash(gh pr diff:*)",
