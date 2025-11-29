@@ -25,7 +25,8 @@
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(gh pr checkout:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(gh search:*)"
     ],
     "deny": [],
     "ask": [
@@ -33,6 +34,7 @@
       "Bash(git checkout:*)"
     ]
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/code/dotfiles/claude/statusline.sh",
@@ -46,6 +48,5 @@
     "full-stack-orchestration@claude-code-workflows": true,
     "code-documentation@claude-code-workflows": true
   },
-  "alwaysThinkingEnabled": true,
-  "model": "opus"
+  "alwaysThinkingEnabled": true
 }
