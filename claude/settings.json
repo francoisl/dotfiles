@@ -14,7 +14,7 @@
       "Bash(mvn clean:*)",
       "Bash(mvn package:*)",
       "Bash(mvn test:*)",
-      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
       "Bash(npm run lint-changed)",
       "Bash(rg:*)",
       "Bash(source:*)",
