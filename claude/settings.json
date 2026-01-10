@@ -35,7 +35,11 @@
       "Bash(git tag:*)",
       "Bash(git show:*)",
       "Bash(npm test:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_fill_form"
     ],
     "deny": [],
     "ask": [
