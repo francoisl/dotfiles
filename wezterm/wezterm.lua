@@ -370,7 +370,15 @@ config.keys = {
         key = "b",
         mods = "SUPER",
         action = act.EmitEvent("toggle-tab-bar"),
-    }
+    },
+    {
+        key =  "a",
+        mods = "SUPER",
+        action = wezterm.action_callback(function(window, pane)
+                local selected = pane:get_lines_as_text(pane:get_dimensions().scrollback_rows)
+                window:copy_to_clipboard(selected, 'Clipboard')
+            end)
+        }
 }
 
 config.mouse_bindings = {
