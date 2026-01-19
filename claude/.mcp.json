@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "pinecone": {
+      "command": "npx",
+      "args": ["-y", "@pinecone-database/mcp"],
+      "env": {
+        "PINECONE_API_KEY": "${PINECONE_API_KEY}"
+      }
+    },
+    "victorialogs": {
+      "type": "stdio",
+      "command": "${HOME}/.local/bin/mcp-victorialogs",
+      "args": [],
+      "env": {
+        "VL_INSTANCE_ENTRYPOINT": "${VL_INSTANCE_ENTRYPOINT}",
+        "VL_INSTANCE_HEADERS": "${VL_INSTANCE_HEADERS}"
+      }
+    }
+  }
+}
