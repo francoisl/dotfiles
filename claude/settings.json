@@ -39,7 +39,14 @@
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_type",
       "mcp__playwright__browser_click",
-      "mcp__playwright__browser_fill_form"
+      "mcp__playwright__browser_fill_form",
+      "mcp__pinecone-mcp__search-records",
+      "mcp__pinecone-mcp__describe-index-stats",
+      "Skill(stack-overflow-search)",
+      "mcp__pinecone__search-records",
+      "mcp__victorialogs__query",
+      "mcp__victorialogs__hits",
+      "Read"
     ],
     "deny": [],
     "ask": [
