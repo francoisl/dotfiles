@@ -71,5 +71,18 @@
     "code-documentation@claude-code-workflows": true
   },
   "alwaysThinkingEnabled": true,
-  "promptSuggestionEnabled": false
+  "promptSuggestionEnabled": false,
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/code/dotfiles/claude/notify-on-stop.fish"
+          }
+        ]
+      }
+    ]
+  }
 }
