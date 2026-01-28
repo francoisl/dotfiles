@@ -8,6 +8,7 @@ CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir')
 COST=$(printf "%.4f" $(echo "$input" | jq -r '.cost.total_cost_usd'))
 LINES_ADDDED=$(echo "$input" | jq -r '.cost.total_lines_added')
 LINES_REMOVED=$(echo "$input" | jq -r '.cost.total_lines_removed')
+PERCENT_USED=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 
 # Show git branch if in a git repo
 GIT_BRANCH=""
@@ -20,5 +21,5 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
     SUFFIX+=" | 󰦒 ${LINES_ADDDED}/${LINES_REMOVED}"
 fi
 
-echo "󱚤 $MODEL_DISPLAY |  ${CURRENT_DIR##*/}$GIT_BRANCH $SUFFIX" | lolcat --force
+echo "󱚤 $MODEL_DISPLAY |  ${CURRENT_DIR##*/}$GIT_BRANCH $SUFFIX |  ${PERCENT_USED}%" | lolcat --force
 
