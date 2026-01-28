@@ -57,21 +57,6 @@
     "defaultMode": "default"
   },
   "model": "opus",
-  "statusLine": {
-    "type": "command",
-    "command": "~/code/dotfiles/claude/statusline.sh",
-    "padding": 0
-  },
-  "enabledPlugins": {
-    "javascript-typescript@claude-code-workflows": true,
-    "backend-development@claude-code-workflows": true,
-    "security-scanning@claude-code-workflows": true,
-    "code-review-ai@claude-code-workflows": true,
-    "full-stack-orchestration@claude-code-workflows": true,
-    "code-documentation@claude-code-workflows": true
-  },
-  "alwaysThinkingEnabled": true,
-  "promptSuggestionEnabled": false,
   "hooks": {
     "Stop": [
       {
@@ -84,5 +69,21 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/code/dotfiles/claude/statusline.sh",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "javascript-typescript@claude-code-workflows": true,
+    "backend-development@claude-code-workflows": true,
+    "security-scanning@claude-code-workflows": true,
+    "code-review-ai@claude-code-workflows": true,
+    "full-stack-orchestration@claude-code-workflows": true,
+    "code-documentation@claude-code-workflows": true,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true,
+  "promptSuggestionEnabled": false
 }
