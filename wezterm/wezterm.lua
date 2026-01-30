@@ -244,7 +244,7 @@ config.window_background_image_hsb = {
     saturation = 1,
 }
 
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.93
 config.macos_window_background_blur = 8
 config.inactive_pane_hsb = {
     saturation = 0.6,
