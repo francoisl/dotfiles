@@ -50,7 +50,15 @@
       "Bash(gh api repos/*/*/pulls/*/comments*)",
       "Bash(gh api repos/*/*/pulls/*/reviews*)",
       "Bash(gh api repos/*/*/issues/*/comments*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(find *| xargs grep:*)",
+      "Bash(fd *| xargs grep:*)",
+      "Bash(ls *| xargs grep:*)",
+      "Bash(git ls-files*| xargs grep:*)",
+      "Bash(git diff --name-only*| xargs grep:*)",
+      "Bash(rg *| xargs grep:*)",
+      "Bash(grep *| xargs grep:*)",
+      "Bash(echo *| xargs grep:*)"
     ],
     "deny": [],
     "ask": [
