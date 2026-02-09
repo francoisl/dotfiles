@@ -25,7 +25,7 @@ set -g theme_date_timezone (ls -l /etc/localtime | cut -d"/" -f8,9)
 set -x RUBY_CONFIGURE_OPTS "--with-openssl-dir="(brew --prefix openssl@1.1)
 
 ### Reusable global for the extra CF certs (exports, bootstrap)
-set -g EXTRA_CERTS $HOME/Expensidev/Ops-Configs/saltfab/cacert.pem
+set -g EXTRA_CERTS $HOME/Expensidev/Ops-Configs/src/saltfab/cacert.pem
 ### Node export for scripts
 set -x NODE_EXTRA_CA_CERTS $EXTRA_CERTS
 set -x AWS_CA_BUNDLE $EXTRA_CERTS
