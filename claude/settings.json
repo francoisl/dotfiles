@@ -58,7 +58,8 @@
       "Bash(git diff --name-only*| xargs grep:*)",
       "Bash(rg *| xargs grep:*)",
       "Bash(grep *| xargs grep:*)",
-      "Bash(echo *| xargs grep:*)"
+      "Bash(echo *| xargs grep:*)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": [
