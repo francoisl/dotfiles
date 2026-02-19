@@ -398,6 +398,11 @@ config.mouse_bindings = {
         mods = "NONE",
         action = wezterm.action.Nop,
     },
+    {
+        event = { Up = { streak = 1, button = "Left" } },
+        mods = "SUPER",
+        action = wezterm.action.OpenLinkAtMouseCursor,
+    }
 }
 
 config.quick_select_patterns = {

@@ -60,7 +60,8 @@
       "Bash(grep *| xargs grep:*)",
       "Bash(echo *| xargs grep:*)",
       "Bash(head:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(gh pr checks:*)"
     ],
     "deny": [],
     "ask": [
