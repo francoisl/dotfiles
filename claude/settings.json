@@ -59,7 +59,8 @@
       "Bash(rg *| xargs grep:*)",
       "Bash(grep *| xargs grep:*)",
       "Bash(echo *| xargs grep:*)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": [
@@ -92,6 +93,17 @@
           {
             "type": "command",
             "command": "~/code/dotfiles/claude/notify-on-stop.fish"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/code/dotfiles/claude/notify-on-stop.fish --needs-permission"
           }
         ]
       }
