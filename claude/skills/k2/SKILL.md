@@ -11,15 +11,17 @@ Show the user's current work items from GitHub, replicating the K2 browser exten
 
 ### Step 1: Check cache freshness
 
-Cache lives in `~/.cache/k2/`. Run this command first:
+Cache lives in `~/.cache/k2/`. Run these two commands in parallel:
 
 ```bash
-# Check if cache exists and is less than 6 hours old
-find ~/.cache/k2 -name "prs_review_requested.json" -newermt "6 hours ago" 2>/dev/null | head -1
+stat -f %m ~/.cache/k2/prs_review_requested.json 2>/dev/null
 ```
 
-- If the command outputs a file path, the cache is **fresh** — skip to Step 3 (read cache).
-- If the command outputs nothing (empty), the cache is **stale or missing** — proceed to Step 2.
+```bash
+date +%s
+```
+
+Subtract the `stat` output (file modification epoch) from the `date` output (current epoch). If the difference is less than 21600 (6 hours in seconds), the cache is **fresh** — skip to Step 3 (read cache). If the file doesn't exist or the difference is >= 21600, the cache is **stale or missing** — proceed to Step 2.
 
 ### Step 2: Fetch fresh data
 
