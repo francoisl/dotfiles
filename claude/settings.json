@@ -64,7 +64,8 @@
       "Bash(gh pr checks *)",
       "Bash(stat *)",
       "Bash(date *)",
-      "Bash(jq *)"
+      "Bash(jq *)",
+      "Bash(tail *)"
     ],
     "deny": [],
     "ask": [
