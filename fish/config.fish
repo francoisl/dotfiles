@@ -8,14 +8,10 @@ set -x ANDROID_HOME $HOME/Library/Android/sdk/
 fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/tools $ANDROID_HOME/tools/bin
 
 # Set default node version (fast-nvm-fish)
-nvm use 20.20.0 >/dev/null
+nvm use 20.19.5 >/dev/null
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
-
-if command -v pyenv 1>/dev/null 2>&1;
-  pyenv init - | source;
-end
 
 ### Colors
 set fish_color_search_match --background='343434'
