@@ -11,47 +11,37 @@ Show the user's current work items from GitHub, replicating the K2 browser exten
 
 ### Step 1: Check cache freshness
 
-Cache lives in `~/.cache/k2/`. Run these two commands in parallel:
+Cache lives in `/Users/francois/.cache/k2/`. Use the Read tool to read `/Users/francois/.cache/k2/prs_review_requested.json`. If the file doesn't exist, the cache is **missing** — proceed to Step 2. If it exists, run:
 
 ```bash
-stat -f %m ~/.cache/k2/prs_review_requested.json 2>/dev/null
+ls -l /Users/francois/.cache/k2/prs_review_requested.json
 ```
 
-```bash
-date +%s
-```
-
-Subtract the `stat` output (file modification epoch) from the `date` output (current epoch). If the difference is less than 21600 (6 hours in seconds), the cache is **fresh** — skip to Step 3 (read cache). If the file doesn't exist or the difference is >= 21600, the cache is **stale or missing** — proceed to Step 2.
+Check the modification date from the `ls` output. If it's more than 6 hours old, the cache is **stale** — proceed to Step 2. Otherwise skip to Step 3.
 
 ### Step 2: Fetch fresh data
 
 Run `mkdir -p ~/.cache/k2` first, then run all 5 `gh` commands **in parallel**, writing output to cache files:
 
 ```bash
-gh search prs --state=open --review-requested=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > ~/.cache/k2/prs_review_requested.json
+gh search prs --state=open --review-requested=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > /Users/francois/.cache/k2/prs_review_requested.json
 
-gh search prs --state=open --reviewed-by=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > ~/.cache/k2/prs_reviewed_by.json
+gh search prs --state=open --reviewed-by=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > /Users/francois/.cache/k2/prs_reviewed_by.json
 
-gh search issues --state=open --assignee=@me --repo=Expensify/Expensify --repo=Expensify/App --repo=Expensify/Insiders --json title,url,labels,updatedAt,createdAt,repository,assignees,body --limit 100 > ~/.cache/k2/issues_assigned.json
+gh search issues --state=open --assignee=@me --repo=Expensify/Expensify --repo=Expensify/App --repo=Expensify/Insiders --json title,url,labels,updatedAt,createdAt,repository,assignees,body --limit 100 > /Users/francois/.cache/k2/issues_assigned.json
 
-gh search prs --state=open --assignee=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > ~/.cache/k2/prs_assigned.json
+gh search prs --state=open --assignee=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > /Users/francois/.cache/k2/prs_assigned.json
 
-gh search prs --state=open --author=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > ~/.cache/k2/prs_authored.json
+gh search prs --state=open --author=@me --owner=Expensify --json title,url,updatedAt,author,repository,isDraft > /Users/francois/.cache/k2/prs_authored.json
 ```
 
 After all commands complete, proceed to Step 3.
 
 ### Step 3: Read cache and present results
 
-Read all 5 JSON files from `~/.cache/k2/` using the Read tool, then present the data as described below.
+Read all 5 JSON files from `/Users/francois/.cache/k2/` using the Read tool, then present the data as described below.
 
-Also check when the cache was last updated:
-
-```bash
-stat -f "%Sm" -t "%Y-%m-%d %H:%M" ~/.cache/k2/prs_review_requested.json
-```
-
-Show the cache timestamp at the top of the output, e.g. "Data as of: 2025-01-15 14:30". If the data was just fetched, say "Data as of: just now".
+Use the modification date from the `ls -l` output in Step 1 to show when the cache was last updated at the top of the output, e.g. "Data as of: 2025-01-15 14:30". If the data was just fetched, say "Data as of: just now".
 
 ### Presenting results
 

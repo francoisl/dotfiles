@@ -65,7 +65,8 @@
       "Bash(stat *)",
       "Bash(date *)",
       "Bash(jq *)",
-      "Bash(tail *)"
+      "Bash(tail *)",
+      "Bash(cd * && git show *)"
     ],
     "deny": [],
     "ask": [
@@ -126,7 +127,8 @@
     "code-review-ai@claude-code-workflows": true,
     "full-stack-orchestration@claude-code-workflows": true,
     "code-documentation@claude-code-workflows": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "slack@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "promptSuggestionEnabled": false
