@@ -73,8 +73,8 @@ wezterm.on("gui-startup", function(cmd)
     local tab2_tr = tab2_tl:split({ direction = "Right" })
     tab2_tl:send_text("vssh\n")
     tab2_bl:send_text("vssh\n")
-    tab2_tr:send_text("./script/sql.sh\n")
-    tab2_br:send_text("./script/bedrocksql.sh\n")
+    tab2_tr:send_text("./script/sql.sh")
+    tab2_br:send_text("./script/bedrocksql.sh")
 
     -- Tab 3:
     local _, tab3, _ = window:spawn_tab({})
@@ -92,12 +92,7 @@ wezterm.on("gui-startup", function(cmd)
         direction = "Right",
         size = 0.2,
     })
-    local tab5_br = tab5_tr:split({
-        direction = "Bottom",
-        size = 0.35,
-    })
     tab5_tr:send_text("nw ")
-    tab5_br:send_text("../script/ngrok.sh francois")
 
     -- Tab 6: Auth
     local _, tab6, _ = window:spawn_tab({
