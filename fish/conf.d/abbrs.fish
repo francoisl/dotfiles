@@ -66,3 +66,4 @@ abbr -a -- cr 'claude --resume'
 abbr -a --set-cursor='%' -- vgrep 'nvim -q (rg --vimgrep % --color=never | psub) -c copen'
 abbr -a -- bro 'git br | fzf | xargs git co'
 abbr -a -- n nvim
+abbr -a --regex '^\\.\\.+$' --function multicd -- dotdot
