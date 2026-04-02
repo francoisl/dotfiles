@@ -66,7 +66,22 @@
       "Bash(date *)",
       "Bash(jq *)",
       "Bash(tail *)",
-      "Bash(cd * && git show *)"
+      "Bash(cd * && git show *)",
+      "Bash(echo *)",
+      "Bash(gh pr:*)",
+      "mcp__victorialogs__facets",
+      "Bash(python3:*)",
+      "Bash(./script/sql.sh:*)",
+      "Bash(ldd:*)",
+      "Bash(gh search prs *)",
+      "Bash(gh search issues *)",
+      "mcp__plugin_slack_slack__slack_search_channels",
+      "mcp__plugin_slack_slack__slack_search_public",
+      "mcp__plugin_slack_slack__slack_read_thread",
+      "mcp__pinecone__search-docs",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(mvn -DskipTests package)",
+      "Bash(mvn -DskipTests clean package)"
     ],
     "deny": [],
     "ask": [
@@ -131,6 +146,6 @@
     "slack@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
-  "promptSuggestionEnabled": false,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "promptSuggestionEnabled": false
 }
