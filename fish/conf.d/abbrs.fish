@@ -67,3 +67,4 @@ abbr -a --set-cursor='%' -- vgrep 'nvim -q (rg --vimgrep % --color=never | psub)
 abbr -a -- bro 'git br | fzf | xargs git co'
 abbr -a -- n nvim
 abbr -a --regex '^\\.\\.+$' --function multicd -- dotdot
+abbr -a -- behind 'git rev-list --left-right --count main...HEAD'
