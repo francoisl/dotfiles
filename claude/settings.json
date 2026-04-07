@@ -147,5 +147,6 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "promptSuggestionEnabled": false
+  "promptSuggestionEnabled": false,
+  "skipAutoPermissionPrompt": true
 }
