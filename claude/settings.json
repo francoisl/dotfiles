@@ -146,7 +146,7 @@
     "slack@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "promptSuggestionEnabled": false,
   "skipAutoPermissionPrompt": true
 }
