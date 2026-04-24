@@ -103,7 +103,7 @@
       "Bash(gh api * --field *)",
       "Bash(gh api * -F *)"
     ],
-    "defaultMode": "default"
+    "defaultMode": "auto"
   },
   "model": "opus[1m]",
   "hooks": {
