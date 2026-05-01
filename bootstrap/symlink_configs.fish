@@ -85,7 +85,9 @@ safe_symlink $DOTFILES_DIR/fish/completions/worktime.fish ~/.config/fish/complet
 # as work).
 mkdir -p ~/.worktime
 set worktime_cron_marker 'worktime/tick.sh'
-set worktime_cron_line "*/2 * * * * $DOTFILES_DIR/misc/worktime/tick.sh"
+# Invoke via /bin/sh explicitly — macOS cron's default PATH is /usr/bin:/bin
+# only, but otherwise this is just defensive and doesn't change behavior.
+set worktime_cron_line "*/2 * * * * /bin/sh $DOTFILES_DIR/misc/worktime/tick.sh"
 if crontab -l 2>/dev/null | grep -qF $worktime_cron_marker
     echo "✓ worktime cron job already installed"
 else

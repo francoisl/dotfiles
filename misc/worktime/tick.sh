@@ -5,11 +5,13 @@
 #
 IDLE_THRESHOLD_SEC=900  # 15 minutes — covers thinking, meetings, hallway chats
 
-idle_ns=$(ioreg -c IOHIDSystem 2>/dev/null | awk '/HIDIdleTime/ {print $NF; exit}')
+# Use absolute paths — cron's default PATH (/usr/bin:/bin) doesn't include
+# /usr/sbin where ioreg lives, so a bare `ioreg` call would silently fail.
+idle_ns=$(/usr/sbin/ioreg -c IOHIDSystem 2>/dev/null | /usr/bin/awk '/HIDIdleTime/ {print $NF; exit}')
 [ -n "$idle_ns" ] || exit 0  # ioreg unavailable; skip silently
 idle_sec=$(( idle_ns / 1000000000 ))
 
 if [ "$idle_sec" -lt "$IDLE_THRESHOLD_SEC" ]; then
     mkdir -p "$HOME/.worktime"
-    date -u +"%Y-%m-%dT%H:%M:%SZ" >> "$HOME/.worktime/log"
+    /bin/date -u +"%Y-%m-%dT%H:%M:%SZ" >> "$HOME/.worktime/log"
 fi
