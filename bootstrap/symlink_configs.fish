@@ -74,6 +74,11 @@ safe_symlink $DOTFILES_DIR/claude/statusline.sh ~/.claude/statusline.sh
 mkdir -p ~/.local/bin
 safe_symlink $DOTFILES_DIR/misc/worktime/worktime ~/.local/bin/worktime
 
+# Symlink worktime fish completions (individual file — symlinking the whole
+# completions/ dir would clobber plugin-installed completions).
+mkdir -p ~/.config/fish/completions
+safe_symlink $DOTFILES_DIR/fish/completions/worktime.fish ~/.config/fish/completions/worktime.fish
+
 # Set up worktime log directory and cron job. tick.sh only logs a timestamp
 # when the user has interacted with the machine in the past 2 minutes — without
 # that check the log captures uptime rather than activity (idle laptop counts
