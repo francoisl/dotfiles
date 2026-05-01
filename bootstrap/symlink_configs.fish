@@ -74,5 +74,20 @@ safe_symlink $DOTFILES_DIR/claude/statusline.sh ~/.claude/statusline.sh
 mkdir -p ~/.local/bin
 safe_symlink $DOTFILES_DIR/misc/worktime/worktime ~/.local/bin/worktime
 
+# Set up worktime log directory and cron job (logs a UTC timestamp every 2 min,
+# which `worktime` reads to report hours and render the heatmap).
+mkdir -p ~/.worktime
+set worktime_cron_marker '/.worktime/log'
+set worktime_cron_line '*/2 * * * * date -u +"\%Y-\%m-\%dT\%H:\%M:\%SZ" >> '$HOME'/.worktime/log'
+if crontab -l 2>/dev/null | grep -qF $worktime_cron_marker
+    echo "✓ worktime cron job already installed"
+else
+    begin
+        crontab -l 2>/dev/null
+        echo $worktime_cron_line
+    end | crontab -
+    echo "✓ Installed worktime cron job"
+end
+
 echo ""
 echo "✓ Config file symlinks complete!"
