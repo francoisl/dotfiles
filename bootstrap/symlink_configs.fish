@@ -70,5 +70,9 @@ safe_symlink $DOTFILES_DIR/uv/uv.toml ~/.config/uv/uv.toml
 safe_symlink $DOTFILES_DIR/claude/settings.json ~/.claude/settings.json
 safe_symlink $DOTFILES_DIR/claude/statusline.sh ~/.claude/statusline.sh
 
+# Symlink worktime CLI into ~/.local/bin (already on PATH)
+mkdir -p ~/.local/bin
+safe_symlink $DOTFILES_DIR/misc/worktime/worktime ~/.local/bin/worktime
+
 echo ""
 echo "✓ Config file symlinks complete!"

@@ -1,0 +1,318 @@
+#!/usr/bin/env python3
+"""Analyze ~/.worktime/log to report work hours and render a heatmap.
+
+The log is appended to every 2 minutes by a cron job, with one UTC timestamp
+per line (e.g. '2026-04-30T03:32:00Z'). Each tick proves the machine was on
+during the past 2-minute window. Timestamps are converted to local time
+before any day grouping.
+"""
+
+import argparse
+import os
+import sys
+from collections import defaultdict
+from datetime import date, datetime, timedelta
+from pathlib import Path
+
+LOG_PATH = Path.home() / ".worktime" / "log"
+TICK_MINUTES = 2
+SESSION_GAP_MINUTES = 6  # split sessions when gap > this (allows 1 missed tick)
+SUBSTANTIAL_MIN_MINUTES = 10  # power-nap bursts shorter than this are noise, not work
+
+# Hours-per-day → heat level (0..4)
+def hours_to_level(h: float) -> int:
+    if h <= 0:    return 0
+    if h < 2:     return 1
+    if h < 4:     return 2
+    if h < 6:     return 3
+    return 4
+
+# Terminal palette (truecolor RGB, GitHub-ish dark)
+TERM_PALETTE = [
+    (35, 38, 45),    # 0 empty
+    (14, 68, 41),    # 1
+    (0, 109, 50),    # 2
+    (38, 166, 65),   # 3
+    (57, 211, 83),   # 4
+]
+# SVG palette (GitHub light)
+SVG_PALETTE = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]
+
+DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+# ----- parsing -----
+
+def load_ticks(path: Path = LOG_PATH) -> list[datetime]:
+    if not path.exists():
+        sys.exit(f"worktime: log not found at {path}")
+    ticks: list[datetime] = []
+    with open(path) as f:
+        for line in f:
+            s = line.strip()
+            if not s:
+                continue
+            try:
+                ticks.append(datetime.fromisoformat(s).astimezone())
+            except ValueError:
+                continue
+    ticks.sort()
+    return ticks
+
+
+def group_by_day(ticks: list[datetime]) -> dict[date, list[datetime]]:
+    days: dict[date, list[datetime]] = defaultdict(list)
+    for t in ticks:
+        days[t.date()].append(t)
+    return days
+
+
+def find_sessions(day_ticks: list[datetime]) -> list[list[datetime]]:
+    if not day_ticks:
+        return []
+    sessions = [[day_ticks[0]]]
+    gap = timedelta(minutes=SESSION_GAP_MINUTES)
+    for t in day_ticks[1:]:
+        if t - sessions[-1][-1] > gap:
+            sessions.append([t])
+        else:
+            sessions[-1].append(t)
+    return sessions
+
+
+def hours_of(day_ticks: list[datetime]) -> float:
+    """Hours of active work — only substantial sessions count, brief power-nap
+    bursts don't represent work."""
+    sessions = find_sessions(day_ticks)
+    substantial_ticks = sum(len(s) for s in sessions if len(s) * TICK_MINUTES >= SUBSTANTIAL_MIN_MINUTES)
+    return substantial_ticks * TICK_MINUTES / 60.0
+
+
+def uptime_hours_of(day_ticks: list[datetime]) -> float:
+    """Raw uptime — every tick counts, including power-nap bursts."""
+    return len(day_ticks) * TICK_MINUTES / 60.0
+
+
+def fmt_hm(hours: float) -> str:
+    total = int(round(hours * 60))
+    h, m = divmod(total, 60)
+    return f"{h}h{m:02d}m"
+
+
+# ----- day report -----
+
+def cmd_day(args: argparse.Namespace) -> None:
+    target = date.fromisoformat(args.date) if args.date else date.today()
+    days = group_by_day(load_ticks())
+    day_ticks = days.get(target, [])
+    print(f"{target} ({target.strftime('%A')})")
+    if not day_ticks:
+        print("  (no activity)")
+        return
+
+    sessions = find_sessions(day_ticks)
+    substantial = [s for s in sessions if len(s) * TICK_MINUTES >= SUBSTANTIAL_MIN_MINUTES]
+    bookend = substantial if substantial else sessions
+    started = bookend[0][0]
+    stopped = bookend[-1][-1]
+    substantial_h = sum(len(s) * TICK_MINUTES for s in substantial) / 60.0
+    micro_count = len(sessions) - len(substantial)
+
+    print(f"  Started: {started.strftime('%H:%M')}")
+    print(f"  Stopped: {stopped.strftime('%H:%M')}")
+    print(f"  Total:   {fmt_hm(substantial_h)}  (uptime {fmt_hm(uptime_hours_of(day_ticks))})")
+
+    shown = sessions if args.all_sessions else substantial
+    if shown and (len(shown) > 1 or args.all_sessions):
+        print(f"  Sessions ({len(shown)}):")
+        for s in shown:
+            dur = len(s) * TICK_MINUTES / 60.0
+            print(f"    {s[0].strftime('%H:%M')} – {s[-1].strftime('%H:%M')}  ({fmt_hm(dur)})")
+    if not args.all_sessions and micro_count:
+        print(f"  ({micro_count} brief power-nap burst{'s' if micro_count != 1 else ''} hidden — pass --all-sessions to show)")
+
+
+# ----- heatmap -----
+
+def use_color() -> bool:
+    return not os.environ.get("NO_COLOR") and sys.stdout.isatty()
+
+
+def term_block(level: int) -> str:
+    if use_color():
+        r, g, b = TERM_PALETTE[level]
+        return f"\033[38;2;{r};{g};{b}m██\033[0m"
+    return ["··", "░░", "▒▒", "▓▓", "██"][level]
+
+
+def build_grid(grid_start: date, end: date) -> tuple[list[list[date | None]], int]:
+    total_days = (end - grid_start).days + 1
+    weeks = (total_days + 6) // 7
+    grid: list[list[date | None]] = [[None] * weeks for _ in range(7)]
+    for i in range(total_days):
+        d = grid_start + timedelta(days=i)
+        grid[d.weekday()][i // 7] = d
+    return grid, weeks
+
+
+def render_terminal(days_dict: dict[date, list[datetime]], grid_start: date, end: date) -> None:
+    grid, weeks = build_grid(grid_start, end)
+
+    # Month label row: label the first column with data (whatever month it falls
+    # in), then label any subsequent column where a new month begins (day <= 7).
+    seen: set[tuple[int, int]] = set()
+    segments: list[str] = []
+    for col in range(weeks):
+        seg = "   "
+        col_dates = [grid[r][col] for r in range(7) if grid[r][col] and grid[r][col] <= end]
+        for d in col_dates:
+            key = (d.year, d.month)
+            if key in seen:
+                continue
+            if not seen or d.day <= 7:
+                seg = MONTH_LABELS[d.month - 1].ljust(3)
+                seen.add(key)
+                break
+        segments.append(seg)
+    print("     " + "".join(segments).rstrip())
+
+    # Day rows
+    for row in range(7):
+        out = f"{DAY_LABELS[row]:<5}"
+        for col in range(weeks):
+            d = grid[row][col]
+            if d is None or d > end:
+                out += "   "
+            else:
+                lvl = hours_to_level(hours_of(days_dict.get(d, [])))
+                out += term_block(lvl) + " "
+        print(out.rstrip())
+
+    print()
+    print("     Less " + " ".join(term_block(i) for i in range(5)) + " More")
+
+    # Summary
+    in_range = {d: ts for d, ts in days_dict.items() if grid_start <= d <= end}
+    if in_range:
+        total_h = sum(hours_of(v) for v in in_range.values())
+        busiest_d, busiest_ts = max(in_range.items(), key=lambda kv: len(kv[1]))
+        active = len(in_range)
+        avg = total_h / active
+        print()
+        print(f"     {fmt_hm(total_h)} across {active} active days · avg {fmt_hm(avg)}/day")
+        print(f"     Busiest: {busiest_d} ({fmt_hm(hours_of(busiest_ts))})")
+
+
+def render_svg(days_dict: dict[date, list[datetime]], grid_start: date, end: date, out_path: Path) -> None:
+    cell, gap = 11, 3
+    pad_x, pad_y = 30, 25
+    grid, weeks = build_grid(grid_start, end)
+    width = pad_x + weeks * (cell + gap) + 10
+    height = pad_y + 7 * (cell + gap) + 30
+
+    parts: list[str] = []
+    parts.append(
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
+        f'font-family="-apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" '
+        f'font-size="9" fill="#586069">'
+    )
+
+    # Day labels (Mon/Wed/Fri only, GitHub-style)
+    for row, label in [(0, "Mon"), (2, "Wed"), (4, "Fri")]:
+        y = pad_y + row * (cell + gap) + cell - 2
+        parts.append(f'<text x="0" y="{y}">{label}</text>')
+
+    # Cells
+    for col in range(weeks):
+        for row in range(7):
+            d = grid[row][col]
+            if not d or d > end:
+                continue
+            x = pad_x + col * (cell + gap)
+            y = pad_y + row * (cell + gap)
+            h = hours_of(days_dict.get(d, []))
+            color = SVG_PALETTE[hours_to_level(h)]
+            parts.append(
+                f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2" fill="{color}">'
+                f'<title>{d.isoformat()}: {fmt_hm(h)}</title></rect>'
+            )
+
+    # Month labels: first column with data, plus any column where a new month begins
+    seen: set[tuple[int, int]] = set()
+    for col in range(weeks):
+        col_dates = [grid[r][col] for r in range(7) if grid[r][col] and grid[r][col] <= end]
+        for d in col_dates:
+            key = (d.year, d.month)
+            if key in seen:
+                continue
+            if not seen or d.day <= 7:
+                x = pad_x + col * (cell + gap)
+                parts.append(f'<text x="{x}" y="{pad_y - 8}">{MONTH_LABELS[d.month - 1]}</text>')
+                seen.add(key)
+                break
+
+    # Legend (bottom-right)
+    legend_y = pad_y + 7 * (cell + gap) + 8
+    legend_x = pad_x + weeks * (cell + gap) - (5 * (cell + gap) + 35)
+    parts.append(f'<text x="{legend_x - 28}" y="{legend_y + cell - 2}">Less</text>')
+    for i in range(5):
+        x = legend_x + i * (cell + gap)
+        parts.append(
+            f'<rect x="{x}" y="{legend_y}" width="{cell}" height="{cell}" rx="2" fill="{SVG_PALETTE[i]}"/>'
+        )
+    parts.append(f'<text x="{legend_x + 5*(cell+gap) + 2}" y="{legend_y + cell - 2}">More</text>')
+    parts.append('</svg>')
+
+    out_path.write_text("\n".join(parts))
+    print(f"Wrote {out_path}")
+
+
+def cmd_heatmap(args: argparse.Namespace) -> None:
+    ticks = load_ticks()
+    if not ticks:
+        sys.exit("worktime: log is empty")
+    days_dict = group_by_day(ticks)
+    end = date.today()
+    if args.weeks:
+        # Place today in the last column at its weekday row
+        grid_start = end - timedelta(days=(args.weeks - 1) * 7 + end.weekday())
+    else:
+        first = ticks[0].date()
+        grid_start = first - timedelta(days=first.weekday())
+
+    if args.svg:
+        render_svg(days_dict, grid_start, end, Path(args.svg))
+    else:
+        render_terminal(days_dict, grid_start, end)
+
+
+# ----- entry point -----
+
+def main() -> None:
+    p = argparse.ArgumentParser(prog="worktime", description=__doc__.splitlines()[0])
+    sub = p.add_subparsers(dest="cmd")
+
+    pd = sub.add_parser("day", help="Report a single day (default: today)")
+    pd.add_argument("date", nargs="?", help="YYYY-MM-DD (default: today)")
+    pd.add_argument("--all-sessions", action="store_true",
+                    help="Include brief power-nap bursts in the session list")
+
+    ph = sub.add_parser("heatmap", help="Render a calendar heatmap")
+    ph.add_argument("--weeks", type=int, help="Number of weeks to show (default: all)")
+    ph.add_argument("--svg", help="Write SVG to this path instead of terminal")
+
+    args = p.parse_args()
+    if args.cmd == "heatmap":
+        cmd_heatmap(args)
+    else:
+        # Default to day-today if no subcommand
+        if args.cmd is None:
+            args.date = None
+            args.all_sessions = False
+        cmd_day(args)
+
+
+if __name__ == "__main__":
+    main()
