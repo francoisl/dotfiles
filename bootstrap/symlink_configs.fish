@@ -74,11 +74,13 @@ safe_symlink $DOTFILES_DIR/claude/statusline.sh ~/.claude/statusline.sh
 mkdir -p ~/.local/bin
 safe_symlink $DOTFILES_DIR/misc/worktime/worktime ~/.local/bin/worktime
 
-# Set up worktime log directory and cron job (logs a UTC timestamp every 2 min,
-# which `worktime` reads to report hours and render the heatmap).
+# Set up worktime log directory and cron job. tick.sh only logs a timestamp
+# when the user has interacted with the machine in the past 2 minutes — without
+# that check the log captures uptime rather than activity (idle laptop counts
+# as work).
 mkdir -p ~/.worktime
-set worktime_cron_marker '/.worktime/log'
-set worktime_cron_line '*/2 * * * * date -u +"\%Y-\%m-\%dT\%H:\%M:\%SZ" >> '$HOME'/.worktime/log'
+set worktime_cron_marker 'worktime/tick.sh'
+set worktime_cron_line "*/2 * * * * $DOTFILES_DIR/misc/worktime/tick.sh"
 if crontab -l 2>/dev/null | grep -qF $worktime_cron_marker
     echo "✓ worktime cron job already installed"
 else
