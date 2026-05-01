@@ -3,8 +3,7 @@
 # user has interacted with the machine recently. Run every 2 minutes by cron.
 # Activity is checked via macOS's `ioreg`
 #
-IDLE_THRESHOLD_SEC=120  # match the cron interval — counts the user as active
-                        # if they touched a key within the last tick window
+IDLE_THRESHOLD_SEC=900  # 15 minutes — covers thinking, meetings, hallway chats
 
 idle_ns=$(ioreg -c IOHIDSystem 2>/dev/null | awk '/HIDIdleTime/ {print $NF; exit}')
 [ -n "$idle_ns" ] || exit 0  # ioreg unavailable; skip silently
