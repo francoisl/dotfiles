@@ -69,3 +69,4 @@ abbr -a -- n nvim
 abbr -a --regex '^\\.\\.+$' --function multicd -- dotdot
 abbr -a -- behind 'git rev-list --left-right --count main...HEAD'
 abbr -a -- tlv 'tldr -l | fzf --preview "tldr {1} --color" --preview-window=right,70% | xargs tldr'
+abbr -a --set-cursor='%' -- title 'wezterm cli set-tab-title "%"'
