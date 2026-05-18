@@ -2,6 +2,7 @@
 
 # Subcommands (only at the first argument position)
 complete -c worktime -f -n __fish_use_subcommand -a day -d 'Report a single day (default: today)'
+complete -c worktime -f -n __fish_use_subcommand -a week -d 'Daily totals and grand total since Monday'
 complete -c worktime -f -n __fish_use_subcommand -a heatmap -d 'Render a calendar heatmap'
 
 # `day` flags

@@ -134,6 +134,25 @@ def cmd_day(args: argparse.Namespace) -> None:
         print(f"  ({micro_count} brief power-nap burst{'s' if micro_count != 1 else ''} hidden — pass --all-sessions to show)")
 
 
+# ----- week report -----
+
+def cmd_week(args: argparse.Namespace) -> None:
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())  # weekday(): Mon=0..Sun=6
+    days_dict = group_by_day(load_ticks())
+
+    print(f"Week of {monday}")
+    total_h = 0.0
+    for i in range((today - monday).days + 1):
+        d = monday + timedelta(days=i)
+        h = hours_of(days_dict.get(d, []))
+        total_h += h
+        suffix = "  (today)" if d == today else ""
+        print(f"  {d.strftime('%a %Y-%m-%d')}   {fmt_hm(h):>7}{suffix}")
+    print(f"  {'─' * 24}")
+    print(f"  Total              {fmt_hm(total_h):>7}")
+
+
 # ----- heatmap -----
 
 def use_color() -> bool:
@@ -299,6 +318,8 @@ def main() -> None:
     pd.add_argument("--all-sessions", action="store_true",
                     help="Include brief power-nap bursts in the session list")
 
+    sub.add_parser("week", help="Daily totals and grand total since Monday")
+
     ph = sub.add_parser("heatmap", help="Render a calendar heatmap")
     ph.add_argument("--weeks", type=int, help="Number of weeks to show (default: all)")
     ph.add_argument("--svg", help="Write SVG to this path instead of terminal")
@@ -306,6 +327,8 @@ def main() -> None:
     args = p.parse_args()
     if args.cmd == "heatmap":
         cmd_heatmap(args)
+    elif args.cmd == "week":
+        cmd_week(args)
     else:
         # Default to day-today if no subcommand
         if args.cmd is None:
