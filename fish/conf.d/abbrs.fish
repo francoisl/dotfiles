@@ -22,7 +22,6 @@ abbr -a -- gl 'git log'
 abbr -a -- gpo 'git pull origin'
 abbr -a -- gpom 'git pull origin main --no-edit'
 abbr -a -- gr 'cd (git rev-parse --show-toplevel)'
-abbr -a -- gw 'grunt; and grunt watch'
 abbr -a -- iosSim /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator
 abbr -a -- it git
 abbr -a -- jop 'j; and pbpaste'
@@ -70,3 +69,5 @@ abbr -a --regex '^\\.\\.+$' --function multicd -- dotdot
 abbr -a -- behind 'git rev-list --left-right --count main...HEAD'
 abbr -a -- tlv 'tldr -l | fzf --preview "tldr {1} --color" --preview-window=right,70% | xargs tldr'
 abbr -a --set-cursor='%' -- title 'wezterm cli set-tab-title "%"'
+abbr -a -- gw 'git worktree'
+abbr -a -- gwl 'git worktree list'
