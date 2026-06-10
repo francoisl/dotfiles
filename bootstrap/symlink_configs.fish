@@ -37,6 +37,7 @@ mkdir -p ~/.config/uv
 # Symlink terminal configs
 safe_symlink $DOTFILES_DIR/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
 safe_symlink $DOTFILES_DIR/ghostty/config ~/.config/ghostty/config
+safe_symlink $DOTFILES_DIR/starship/starship.toml ~/.config/starship.toml
 
 # Symlink Fish shell config
 safe_symlink $DOTFILES_DIR/fish/config.fish ~/.config/fish/config.fish
