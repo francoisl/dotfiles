@@ -8,7 +8,9 @@ set -x ANDROID_HOME $HOME/Library/Android/sdk/
 fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/tools $ANDROID_HOME/tools/bin
 
 # Set default node version (fast-nvm-fish)
-nvm use 20.19.5 >/dev/null
+if command -q nvm
+    nvm use 20.19.5 >/dev/null
+end
 
 # auto path for cd command
 set -x CDPATH . ~/ ~/Expensidev/ ~/code
@@ -37,8 +39,12 @@ set -gx RIPGREP_CONFIG_PATH ~/.ripgreprc
 if status is-interactive
     source (rbenv init - | psub)
 
+    if command -q starship
+        starship init fish | source
+    end
+
     # Auto-change node version on cd
-    _load_nvm
+    command -q nvm; and _load_nvm
 end
 
 # Added by Antigravity
