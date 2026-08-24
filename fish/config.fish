@@ -9,7 +9,7 @@ fish_add_path $ANDROID_HOME/emulator $ANDROID_HOME/platform-tools $ANDROID_HOME/
 
 # Set default node version (fast-nvm-fish)
 if command -q nvm
-    nvm use 20.19.5 >/dev/null
+    nvm use 26.5.0 >/dev/null
 end
 
 # auto path for cd command
