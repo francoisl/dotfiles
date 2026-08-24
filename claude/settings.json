@@ -143,7 +143,8 @@
     "full-stack-orchestration@claude-code-workflows": true,
     "code-documentation@claude-code-workflows": true,
     "clangd-lsp@claude-plugins-official": true,
-    "slack@claude-plugins-official": true
+    "slack@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
