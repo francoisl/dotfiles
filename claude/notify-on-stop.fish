@@ -7,6 +7,16 @@ if contains -- --needs-permission $argv
     set message "Claude needs permission"
 else
     set message "Claude is done"
+
+    # The Stop hook also fires when the main loop parks itself waiting on
+    # backgrounded subagents/workflows. Those always finish and trigger Stop
+    # again, so stay quiet until none are left in flight. Deliberately ignores
+    # other background task types (shell, monitor, ...) since those can run
+    # forever and would suppress the notification for good.
+    set pending (cat | jq '[.background_tasks[]? | select(.type == "subagent" or .type == "workflow")] | length' 2>/dev/null)
+    if string match -qr '^[1-9]' -- "$pending"
+        exit 0
+    end
 end
 
 set frontmost (osascript -e 'tell application "System Events" to get name of first process whose frontmost is true')
