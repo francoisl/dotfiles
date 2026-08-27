@@ -51,14 +51,6 @@
       "Bash(gh api repos/*/*/pulls/*/reviews*)",
       "Bash(gh api repos/*/*/issues/*/comments*)",
       "Bash(mkdir *)",
-      "Bash(find *| xargs grep *)",
-      "Bash(fd *| xargs grep *)",
-      "Bash(ls *| xargs grep *)",
-      "Bash(git ls-files*| xargs grep *)",
-      "Bash(git diff --name-only*| xargs grep *)",
-      "Bash(rg *| xargs grep *)",
-      "Bash(grep *| xargs grep *)",
-      "Bash(echo *| xargs grep *)",
       "Bash(head *)",
       "Bash(ls *)",
       "Bash(gh pr checks *)",
@@ -81,7 +73,9 @@
       "mcp__pinecone__search-docs",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(mvn -DskipTests package)",
-      "Bash(mvn -DskipTests clean package)"
+      "Bash(mvn -DskipTests clean package)",
+      "Bash(xargs grep:*)",
+      "Bash(git ls-files:*)"
     ],
     "deny": [],
     "ask": [
