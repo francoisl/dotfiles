@@ -70,6 +70,9 @@ safe_symlink $DOTFILES_DIR/uv/uv.toml ~/.config/uv/uv.toml
 # Symlink Claude Code config
 safe_symlink $DOTFILES_DIR/claude/settings.json ~/.claude/settings.json
 safe_symlink $DOTFILES_DIR/claude/statusline.sh ~/.claude/statusline.sh
+safe_symlink $DOTFILES_DIR/claude/CLAUDE.md ~/.claude/CLAUDE.md
+safe_symlink $DOTFILES_DIR/claude/RTK.md ~/.claude/RTK.md
+safe_symlink $DOTFILES_DIR/claude/git-conventions.md ~/.claude/git-conventions.md
 
 # Symlink worktime CLI into ~/.local/bin (already on PATH)
 mkdir -p ~/.local/bin
