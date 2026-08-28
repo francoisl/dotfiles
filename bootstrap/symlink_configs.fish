@@ -74,6 +74,17 @@ safe_symlink $DOTFILES_DIR/claude/CLAUDE.md ~/.claude/CLAUDE.md
 safe_symlink $DOTFILES_DIR/claude/RTK.md ~/.claude/RTK.md
 safe_symlink $DOTFILES_DIR/claude/git-conventions.md ~/.claude/git-conventions.md
 
+# Symlink the whole output-styles dir — every style in it is ours, so new ones
+# get picked up (and backed up) without touching this script.
+safe_symlink $DOTFILES_DIR/claude/output-styles ~/.claude/output-styles
+
+# Skills are symlinked individually: ~/.claude/skills also holds skills that
+# don't live in this repo, so linking the whole dir would hide them.
+mkdir -p ~/.claude/skills
+for skill in (find $DOTFILES_DIR/claude/skills -mindepth 1 -maxdepth 1 -type d)
+    safe_symlink $skill ~/.claude/skills/(basename $skill)
+end
+
 # Symlink worktime CLI into ~/.local/bin (already on PATH)
 mkdir -p ~/.local/bin
 safe_symlink $DOTFILES_DIR/misc/worktime/worktime ~/.local/bin/worktime
