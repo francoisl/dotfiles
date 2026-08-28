@@ -4,17 +4,60 @@
 
 set DOTFILES_DIR ~/code/dotfiles
 
-# Function to safely create a symlink
+# Targets that were left alone because they exist and differ from the repo.
+# Reported as a group at the end so a skip can't scroll past unnoticed.
+set -g skipped_targets
+
+# Returns 0 when source and target hold the same contents (handles both files
+# and directory trees). A type mismatch is never "the same".
+function _same_contents
+    set -l source $argv[1]
+    set -l target $argv[2]
+
+    if test -d "$source"; and test -d "$target"
+        diff -rq "$source" "$target" >/dev/null 2>&1
+        return $status
+    else if test -f "$source"; and test -f "$target"
+        cmp -s "$source" "$target"
+        return $status
+    end
+
+    return 1
+end
+
+# Function to safely create a symlink.
+#
+# Never overwrites a real file or directory whose contents differ from the repo
+# copy — a drifted config is skipped with a warning instead. This used to back
+# up and replace unconditionally, which silently swapped live fish and kitty
+# configs for stale repo versions. Reconciling drift is a judgement call, so the
+# script reports it rather than guessing.
 function safe_symlink
     set -l source $argv[1]
     set -l target $argv[2]
 
     if test -L "$target"
-        echo "✓ $target already symlinked"
-        return
+        # A symlink holds no contents of its own, so re-pointing a stale one is
+        # lossless. Don't report it as correct when it points somewhere else.
+        set -l current (readlink "$target")
+        if test "$current" = "$source"
+            echo "✓ $target already symlinked"
+            return
+        end
+        echo "⚠ $target pointed at $current, re-pointing"
+        rm "$target"
     else if test -e "$target"
-        echo "⚠ $target already exists (not a symlink), backing up to $target.backup"
-        mv "$target" "$target.backup"
+        if _same_contents "$source" "$target"
+            # Byte-identical to a copy that lives in git, so replacing it with
+            # a symlink loses nothing and needs no backup.
+            echo "✓ $target matches the repo copy, converting to a symlink"
+            rm -rf "$target"
+        else
+            echo "✗ SKIPPED $target — exists and differs from the repo copy"
+            echo "    diff -r $target $source"
+            set -g skipped_targets $skipped_targets $target
+            return 1
+        end
     end
 
     ln -s "$source" "$target"
@@ -114,4 +157,14 @@ else
 end
 
 echo ""
+if test (count $skipped_targets) -gt 0
+    echo "⚠ Left "(count $skipped_targets)" target(s) untouched because they differ from the repo:"
+    for target in $skipped_targets
+        echo "    $target"
+    end
+    echo ""
+    echo "  Nothing was lost. Reconcile each one by hand: copy the local changes"
+    echo "  into the repo, or delete the local file to accept the repo version."
+    echo ""
+end
 echo "✓ Config file symlinks complete!"
