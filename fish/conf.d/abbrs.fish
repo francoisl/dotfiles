@@ -71,3 +71,5 @@ abbr -a -- tlv 'tldr -l | fzf --preview "tldr {1} --color" --preview-window=righ
 abbr -a --set-cursor='%' -- title 'wezterm cli set-tab-title "%"'
 abbr -a -- gw 'git worktree'
 abbr -a -- gwl 'git worktree list'
+abbr -a -- oc opencode
+abbr -a -- h herdr
