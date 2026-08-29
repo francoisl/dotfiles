@@ -76,6 +76,8 @@ mkdir -p ~/.config/kitty
 mkdir -p ~/.hammerspoon
 mkdir -p ~/.claude
 mkdir -p ~/.config/uv
+mkdir -p ~/.config/opencode/commands
+mkdir -p ~/.config/opencode/plugins/lib
 
 # Symlink terminal configs
 safe_symlink $DOTFILES_DIR/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
@@ -127,6 +129,14 @@ mkdir -p ~/.claude/skills
 for skill in (find $DOTFILES_DIR/claude/skills -mindepth 1 -maxdepth 1 -type d)
     safe_symlink $skill ~/.claude/skills/(basename $skill)
 end
+
+# Symlink OpenCode config individually so local package dependencies remain
+# available without being committed or clobbered by the dotfiles repository.
+safe_symlink $DOTFILES_DIR/opencode/opencode.jsonc ~/.config/opencode/opencode.jsonc
+safe_symlink $DOTFILES_DIR/opencode/commands/crit.md ~/.config/opencode/commands/crit.md
+safe_symlink $DOTFILES_DIR/opencode/plugins/crit.ts ~/.config/opencode/plugins/crit.ts
+safe_symlink $DOTFILES_DIR/opencode/plugins/rtk.ts ~/.config/opencode/plugins/rtk.ts
+safe_symlink $DOTFILES_DIR/opencode/plugins/lib/crit-wait-notify.js ~/.config/opencode/plugins/lib/crit-wait-notify.js
 
 # Symlink worktime CLI into ~/.local/bin (already on PATH)
 mkdir -p ~/.local/bin
