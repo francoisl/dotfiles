@@ -76,6 +76,7 @@ mkdir -p ~/.config/kitty
 mkdir -p ~/.hammerspoon
 mkdir -p ~/.claude
 mkdir -p ~/.config/uv
+mkdir -p ~/.config/herdr
 mkdir -p ~/.config/opencode/commands
 mkdir -p ~/.config/opencode/plugins/lib
 
@@ -111,6 +112,9 @@ safe_symlink $DOTFILES_DIR/vim/.vimrc ~/.vimrc
 
 # Symlink uv config
 safe_symlink $DOTFILES_DIR/uv/uv.toml ~/.config/uv/uv.toml
+
+# Symlink Herdr config
+safe_symlink $DOTFILES_DIR/herdr/config.toml ~/.config/herdr/config.toml
 
 # Symlink Claude Code config
 safe_symlink $DOTFILES_DIR/claude/settings.json ~/.claude/settings.json
