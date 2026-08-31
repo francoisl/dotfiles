@@ -19,7 +19,7 @@ name = "tokyo-night"
 
 # Override individual color tokens on top of the base theme.
 # Accepts: hex (#rrggbb), named colors, rgb(r,g,b), or panel_bg = "reset"
-# [theme.custom]
+[theme.custom]
 # sidebar_bg = "#181825"
 # active_row_bg = "#1e1e2e"
 # selection_bg = "#313244"
@@ -27,6 +27,9 @@ name = "tokyo-night"
 # accent = "#f5c2e7"
 # red = "#ff6188"
 # green = "#a6e3a1"
+# accent = "#7aa2f7"
+active_row_bg = "#565f89"
+surface_dim = "#7aa2f7"
 
 [terminal]
 # Executable used for new interactive panes.
@@ -281,6 +284,8 @@ prefix = "ctrl+space"
 # accent = "cyan"
 
 # Background notification popup delivery
+show_agent_labels_on_pane_borders = true
+agent_panel_sort = "spaces"
 [ui.toast]
 # off = disable pop-up notifications
 # herdr = show in-app toasts
