@@ -164,6 +164,7 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "promptSuggestionEnabled": false,
+  "autoMemoryEnabled": true,
   "preferredNotifChannel": "auto",
   "skipAutoPermissionPrompt": true
 }
