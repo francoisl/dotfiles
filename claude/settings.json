@@ -149,12 +149,21 @@
     "code-documentation@claude-code-workflows": true,
     "clangd-lsp@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "crit@crit": true
   },
+  "extraKnownMarketplaces": {
+    "crit": {
+      "source": {
+        "source": "github",
+        "repo": "tomasz-tomczyk/crit"
+      }
+    }
+  },
+  "outputStyle": "plain",
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "promptSuggestionEnabled": false,
   "preferredNotifChannel": "auto",
-  "skipAutoPermissionPrompt": true,
-  "outputStyle": "plain"
+  "skipAutoPermissionPrompt": true
 }
