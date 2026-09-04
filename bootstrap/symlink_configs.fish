@@ -137,6 +137,7 @@ end
 # Symlink OpenCode config individually so local package dependencies remain
 # available without being committed or clobbered by the dotfiles repository.
 safe_symlink $DOTFILES_DIR/opencode/opencode.jsonc ~/.config/opencode/opencode.jsonc
+safe_symlink $DOTFILES_DIR/opencode/gh-api-read.md ~/.config/opencode/gh-api-read.md
 safe_symlink $DOTFILES_DIR/opencode/commands/crit.md ~/.config/opencode/commands/crit.md
 safe_symlink $DOTFILES_DIR/opencode/plugins/crit.ts ~/.config/opencode/plugins/crit.ts
 safe_symlink $DOTFILES_DIR/opencode/plugins/rtk.ts ~/.config/opencode/plugins/rtk.ts
@@ -144,6 +145,7 @@ safe_symlink $DOTFILES_DIR/opencode/plugins/lib/crit-wait-notify.js ~/.config/op
 
 # Symlink worktime CLI into ~/.local/bin (already on PATH)
 mkdir -p ~/.local/bin
+safe_symlink $DOTFILES_DIR/misc/gh-api-get ~/.local/bin/gh-api-get
 safe_symlink $DOTFILES_DIR/misc/worktime/worktime ~/.local/bin/worktime
 
 # Symlink worktime fish completions (individual file — symlinking the whole

@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Run GitHub REST API reads without allowing callers to select a mutation method.
+if [ "$#" -eq 0 ] || [ "${1#-}" != "$1" ]; then
+  echo "Usage: gh-api-get ENDPOINT [--paginate] [--slurp] [--include] [--silent] [--verbose] [--cache DURATION] [--hostname HOST] [--jq EXPRESSION] [--preview NAME]" >&2
+  exit 2
+fi
+
+endpoint=$1
+shift
+needs_value=false
+
+for argument in "$@"; do
+  if [ "$needs_value" = true ]; then
+    needs_value=false
+    continue
+  fi
+
+  case "$argument" in
+    --paginate|--slurp|--include|--silent|--verbose) ;;
+    --cache|--hostname|--jq|--preview) needs_value=true ;;
+    --cache=*|--hostname=*|--jq=*|--preview=*) ;;
+    *)
+      echo "gh-api-get only accepts read-only output options" >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [ "$needs_value" = true ]; then
+  echo "gh-api-get option requires a value" >&2
+  exit 2
+fi
+
+exec gh api --method GET "$endpoint" "$@"

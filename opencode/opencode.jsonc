@@ -2,7 +2,8 @@
   "$schema": "https://opencode.ai/config.json",
   "instructions": [
     "~/.claude/git-conventions.md",
-    "~/.claude/output-styles/simple-english.md"
+    "~/.claude/output-styles/simple-english.md",
+    "~/.config/opencode/gh-api-read.md"
   ],
   "permission": {
     "bash": {
@@ -15,6 +16,8 @@
       "rtk ls *": "allow",
       "jq *": "allow",
       "rtk jq *": "allow",
+      "which *": "allow",
+      "rtk which *": "allow",
       "date*": "allow",
       "stat *": "allow",
       "rtk stat *": "allow",
@@ -45,14 +48,20 @@
       "git checkout*": "ask",
       "git push*": "ask",
       "gh api*": "ask",
+      "rtk gh api*": "ask",
+      "gh-api-get *": "allow",
+      "git blame*": "allow",
+      "rtk git blame*": "allow",
       "git worktree*": "allow",
       "rtk git worktree*": "allow",
       "gh run view*": "allow",
       "rtk gh run view*": "allow",
       "git rev-parse*": "allow",
-      "rtk git rev-parse*": "allow"
+      "rtk git rev-parse*": "allow",
+      "which*": "allow",
+      "opencode --help": "allow"
     },
-    "webfetch": "ask"
+    "webfetch": "allow"
   },
   "plugin": ["./plugins/crit.ts"]
 }
