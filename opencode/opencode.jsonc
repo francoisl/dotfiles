@@ -44,7 +44,13 @@
       "git commit*": "ask",
       "git checkout*": "ask",
       "git push*": "ask",
-      "gh api*": "ask"
+      "gh api*": "ask",
+      "git worktree*": "allow",
+      "rtk git worktree*": "allow",
+      "gh run view*": "allow",
+      "rtk gh run view*": "allow",
+      "git rev-parse*": "allow",
+      "rtk git rev-parse*": "allow"
     },
     "webfetch": "ask"
   },
