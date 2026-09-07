@@ -6,6 +6,12 @@
     "~/.config/opencode/gh-api-read.md"
   ],
   "permission": {
+    "external_directory": {
+      "~/.claude/**": "allow"
+    },
+    "edit": {
+      "~/.claude/**": "ask"
+    },
     "bash": {
       "*": "ask",
       "rg *": "allow",
@@ -59,7 +65,9 @@
       "git rev-parse*": "allow",
       "rtk git rev-parse*": "allow",
       "which*": "allow",
-      "opencode --help": "allow"
+      "opencode --help": "allow",
+      "./scripts/style.sh*": "allow",
+      "vssh*": "allow"
     },
     "webfetch": "allow"
   },
