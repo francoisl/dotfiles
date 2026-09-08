@@ -7,7 +7,15 @@
   ],
   "permission": {
     "external_directory": {
-      "~/.claude/**": "allow"
+      "~/.claude/**": "allow",
+      "/opt/homebrew/bin/**": "allow",
+      "~/Expensidev": "allow",
+      "~/Expensidev/**": "allow"
+    },
+    "read": {
+      "/opt/homebrew/bin/**": "allow",
+      "~/Expensidev": "allow",
+      "~/Expensidev/**": "allow"
     },
     "edit": {
       "~/.claude/**": "ask"
@@ -67,7 +75,9 @@
       "which*": "allow",
       "opencode --help": "allow",
       "./scripts/style.sh*": "allow",
-      "vssh*": "allow"
+      "vssh*": "allow",
+      "type": "allow",
+      "type *": "allow"
     },
     "webfetch": "allow"
   },
