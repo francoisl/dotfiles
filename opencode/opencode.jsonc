@@ -10,12 +10,16 @@
       "~/.claude/**": "allow",
       "/opt/homebrew/bin/**": "allow",
       "~/Expensidev": "allow",
-      "~/Expensidev/**": "allow"
+      "~/Expensidev/**": "allow",
+      "~": "allow",
+      "~/**": "allow"
     },
     "read": {
       "/opt/homebrew/bin/**": "allow",
       "~/Expensidev": "allow",
-      "~/Expensidev/**": "allow"
+      "~/Expensidev/**": "allow",
+      "~": "allow",
+      "~/**": "allow"
     },
     "edit": {
       "~/.claude/**": "ask"
@@ -81,5 +85,8 @@
     },
     "webfetch": "allow"
   },
-  "plugin": ["./plugins/crit.ts"]
+  "plugin": ["./plugins/crit.ts"],
+  "experimental": {
+    "disable_paste_summary": true
+  }
 }
