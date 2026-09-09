@@ -81,7 +81,9 @@
       "./scripts/style.sh*": "allow",
       "vssh*": "allow",
       "type": "allow",
-      "type *": "allow"
+      "type *": "allow",
+      "command -v*": "allow",
+      "crit *": "allow"
     },
     "webfetch": "allow"
   },
