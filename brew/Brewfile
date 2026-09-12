@@ -63,6 +63,8 @@ brew "libyaml"
 brew "certbot"
 # Statistics utility to count lines of code
 brew "cloc"
+# Cloudflare Tunnel client (formerly Argo Tunnel)
+brew "cloudflared"
 # Cross-platform make
 brew "cmake"
 # Console Matrix
@@ -75,6 +77,8 @@ brew "gmp"
 brew "coreutils"
 # Apjanke's fork of the classic cowsay project
 brew "cowsay"
+# Your feedback loop with the agent: review plans and code locally
+brew "crit"
 # Command-line csv viewer
 brew "csvlens"
 # Get a file from an HTTP, HTTPS or FTP server
@@ -84,7 +88,7 @@ brew "dialog"
 # Good-lookin' diffs with diff-highlight and more
 brew "diff-so-fancy"
 # Pack, ship and run any application as a lightweight container
-brew "docker", link: false
+brew "docker"
 # Isolated development environments using Docker
 brew "docker-compose"
 # Text processing system for reStructuredText
@@ -171,6 +175,8 @@ brew "libtool"
 brew "guile"
 # Tool for glamorous shell scripts
 brew "gum"
+# Agent multiplexer that lives in your terminal
+brew "herdr"
 # Improved top (interactive process viewer)
 brew "htop"
 # Command-line benchmarking tool
@@ -229,6 +235,8 @@ brew "nss"
 brew "numpy"
 # Manage multiple Node.js versions
 brew "nvm"
+# AI coding agent, built for the terminal
+brew "opencode"
 # Development kit for the Java programming language
 brew "openjdk@17"
 # Open Visual Inference And Optimization toolkit for AI inference
@@ -337,10 +345,10 @@ cask "keycastr"
 cask "kitty"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
+# AI coding agent desktop client
+cask "opencode-desktop"
 # Desktop virtualization software
 cask "parallels"
-# Workflow application to improve productivity
-cask "pastebot"
 # Music streaming service
 cask "spotify"
 # Development environment
@@ -360,5 +368,7 @@ vscode "vscjava.vscode-java-dependency"
 vscode "vscjava.vscode-java-pack"
 vscode "vscjava.vscode-java-test"
 vscode "vscjava.vscode-maven"
+uv "keyring", with: ["cloudsmith-keyring"]
 uv "logsearch-tui"
 uv "saltfab"
+npm "corepack"
