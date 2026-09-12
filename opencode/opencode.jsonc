@@ -83,6 +83,7 @@
       "type": "allow",
       "type *": "allow",
       "command -v*": "allow",
+      "git remote *": "allow",
       "crit *": "allow"
     },
     "webfetch": "allow"
@@ -90,5 +91,12 @@
   "plugin": ["./plugins/crit.ts"],
   "experimental": {
     "disable_paste_summary": true
+  },
+  "mcp" : {
+    "cerebro": {
+      "type": "remote",
+      "url": "https://mcp.cerebro.exfy.io/mcp",
+      "oauth": {}
+    }
   }
 }

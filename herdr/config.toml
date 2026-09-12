@@ -1,3 +1,4 @@
+onboarding = false
 # herdr configuration
 # Place this file at ~/.config/herdr/config.toml
 
@@ -19,6 +20,7 @@ name = "tokyo-night"
 
 # Override individual color tokens on top of the base theme.
 # Accepts: hex (#rrggbb), named colors, rgb(r,g,b), or panel_bg = "reset"
+auto_switch = false
 [theme.custom]
 # sidebar_bg = "#181825"
 # active_row_bg = "#1e1e2e"
