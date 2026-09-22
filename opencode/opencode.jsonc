@@ -3,7 +3,8 @@
   "instructions": [
     "~/.claude/git-conventions.md",
     "~/.claude/output-styles/simple-english.md",
-    "~/.config/opencode/gh-api-read.md"
+    "~/.config/opencode/gh-api-read.md",
+    "~/.config/opencode/github-comment-preferences.md"
   ],
   "permission": {
     "external_directory": {

@@ -138,6 +138,7 @@ end
 # available without being committed or clobbered by the dotfiles repository.
 safe_symlink $DOTFILES_DIR/opencode/opencode.jsonc ~/.config/opencode/opencode.jsonc
 safe_symlink $DOTFILES_DIR/opencode/gh-api-read.md ~/.config/opencode/gh-api-read.md
+safe_symlink $DOTFILES_DIR/opencode/github-comment-preferences.md ~/.config/opencode/github-comment-preferences.md
 safe_symlink $DOTFILES_DIR/opencode/commands/crit.md ~/.config/opencode/commands/crit.md
 safe_symlink $DOTFILES_DIR/opencode/plugins/crit.ts ~/.config/opencode/plugins/crit.ts
 safe_symlink $DOTFILES_DIR/opencode/plugins/rtk.ts ~/.config/opencode/plugins/rtk.ts
