@@ -25,6 +25,7 @@ function wmerge
 
     echo "👀 Checking PR status - $watchCommand"
     command $watchCommand
+    notify "PR #$prNumber checks"
     set -l err $status
 
     # Beep a few times to notify checks are done
@@ -48,6 +49,7 @@ function wmerge
 
         echo "Merging command - $mergeCommand"
         command $mergeCommand
+        notify "PR #$prNumber merge"
         and echo -e "\n✅ PR $prNumber merged successfully"
         or echo -e "\n❌ Failed to merge PR $prNumber"
     end
