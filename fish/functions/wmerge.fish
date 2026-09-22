@@ -45,7 +45,7 @@ function wmerge
         if set -ql _flag_repo
             set -a mergeCommand --repo $_flag_repo
         end
-        set -a mergeCommand -m
+        set -a mergeCommand -m --delete-branch
 
         echo "Merging command - $mergeCommand"
         command $mergeCommand
