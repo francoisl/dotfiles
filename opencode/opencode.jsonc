@@ -88,27 +88,14 @@
       "crit *": "allow"
     },
     "webfetch": "allow",
-    // Slack MCP (via Cerebro): block write tools. Read tools stay allowed.
-    // Patterns match tool names such as cerebro_slack_send_message.
-    "cerebro_slack_*send*": "deny",
-    "cerebro_slack_*post*": "deny",
-    "cerebro_slack_*reply*": "deny",
-    "cerebro_slack_*schedule_*": "deny",
-    "cerebro_slack_*scheduleMessage*": "deny",
-    "cerebro_slack_*create*": "deny",
-    "cerebro_slack_*update*": "deny",
-    "cerebro_slack_*edit*": "deny",
-    "cerebro_slack_*delete*": "deny",
-    "cerebro_slack_*upload*": "deny",
-    "cerebro_slack_*add*": "deny",
-    "cerebro_slack_*remove*": "deny",
-    "cerebro_slack_*invite*": "deny",
-    "cerebro_slack_*kick*": "deny",
-    "cerebro_slack_*join*": "deny",
-    "cerebro_slack_*leave*": "deny",
-    "cerebro_slack_*archive*": "deny",
-    "cerebro_slack_*rename*": "deny",
-    "cerebro_slack_*_set*": "deny"
+    // Slack MCP: deny every tool by default, then allow read-only tools.
+    // The last matching rule wins, so the allow rules must follow the deny rule.
+    // Tool names look like slack_slack_send_message.
+    "slack_*": "deny",
+    "slack_slack_read_*": "allow",
+    "slack_slack_search_*": "allow",
+    "slack_slack_list_*": "allow",
+    "slack_slack_get_reactions": "allow"
   },
   "plugin": ["./plugins/crit.ts"],
   "experimental": {
