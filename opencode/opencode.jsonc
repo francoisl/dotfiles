@@ -87,7 +87,28 @@
       "git remote *": "allow",
       "crit *": "allow"
     },
-    "webfetch": "allow"
+    "webfetch": "allow",
+    // Slack MCP (via Cerebro): block write tools. Read tools stay allowed.
+    // Patterns match tool names such as cerebro_slack_send_message.
+    "cerebro_slack_*send*": "deny",
+    "cerebro_slack_*post*": "deny",
+    "cerebro_slack_*reply*": "deny",
+    "cerebro_slack_*schedule_*": "deny",
+    "cerebro_slack_*scheduleMessage*": "deny",
+    "cerebro_slack_*create*": "deny",
+    "cerebro_slack_*update*": "deny",
+    "cerebro_slack_*edit*": "deny",
+    "cerebro_slack_*delete*": "deny",
+    "cerebro_slack_*upload*": "deny",
+    "cerebro_slack_*add*": "deny",
+    "cerebro_slack_*remove*": "deny",
+    "cerebro_slack_*invite*": "deny",
+    "cerebro_slack_*kick*": "deny",
+    "cerebro_slack_*join*": "deny",
+    "cerebro_slack_*leave*": "deny",
+    "cerebro_slack_*archive*": "deny",
+    "cerebro_slack_*rename*": "deny",
+    "cerebro_slack_*_set*": "deny"
   },
   "plugin": ["./plugins/crit.ts"],
   "experimental": {
