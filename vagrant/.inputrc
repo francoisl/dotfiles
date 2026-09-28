@@ -1,0 +1,10 @@
+# Keep the system bindings (Home/End, Ctrl+arrows, etc.), which readline
+# skips once ~/.inputrc exists.
+$include /etc/inputrc
+
+# Readline binds Esc+Enter (also sent by Option+Enter) to vi-editing-mode,
+# which makes Ctrl+A/Ctrl+E insert a literal ^A/^E in tools like sqlite3.
+# Treat it as a normal Enter instead.
+set keymap emacs
+"\e\C-j": accept-line
+"\e\C-m": accept-line
