@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>K2 · Your daily desk</title>
+    <style>
+        :root {
+            --bg: #f5f5f0;
+            --surface: #ffffff;
+            --ink: #20312d;
+            --muted: #65716a;
+            --line: #e2e7de;
+            --accent: #216b52;
+            --accent-soft: #e6f1e9;
+            --warning: #8a501c;
+            --warning-soft: #fff1df;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+        input {
+            font: inherit;
+        }
+        a {
+            color: inherit;
+        }
+        input[type='checkbox'] {
+            cursor: pointer;
+        }
+        :focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 4px;
+        }
+        [hidden] {
+            display: none !important;
+        }
+        .shell {
+            margin: auto;
+            max-width: 1280px;
+            padding: 32px 40px 64px;
+        }
+        .topbar,
+        .brand,
+        .identity,
+        .section-heading,
+        .task-meta,
+        .summary-line {
+            align-items: center;
+            display: flex;
+        }
+        .topbar {
+            border-bottom: 1px solid var(--line);
+            gap: 16px;
+            justify-content: space-between;
+            padding-bottom: 28px;
+        }
+        .brand {
+            gap: 12px;
+        }
+        .mark {
+            background: var(--ink);
+            border-radius: 12px;
+            color: var(--surface);
+            display: grid;
+            font-size: 18px;
+            font-weight: 750;
+            height: 42px;
+            place-items: center;
+            width: 42px;
+        }
+        .brand-title {
+            font-weight: 700;
+        }
+        .small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .identity {
+            color: var(--muted);
+            flex-wrap: wrap;
+            font-size: 13px;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .user {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 5px 12px;
+        }
+        .intro {
+            margin: 32px 0 24px;
+        }
+        .eyebrow {
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: clamp(28px, 4vw, 38px);
+            letter-spacing: -0.035em;
+            line-height: 1.2;
+            margin: 6px 0;
+        }
+        .intro p {
+            color: var(--muted);
+            margin: 10px 0 0;
+        }
+        .summary {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 1.3fr repeat(3, 1fr);
+            margin-bottom: 32px;
+        }
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            display: block;
+            padding: 20px;
+            text-decoration: none;
+        }
+        a.summary-card:hover {
+            border-color: var(--accent);
+        }
+        .progress-card {
+            background: var(--accent-soft);
+            border-color: transparent;
+        }
+        .summary-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .summary-value {
+            font-size: 28px;
+            font-weight: 650;
+            letter-spacing: -0.04em;
+            line-height: 1.3;
+            margin: 4px 0;
+        }
+        .summary-line {
+            gap: 8px;
+            justify-content: space-between;
+        }
+        progress {
+            appearance: none;
+            background: var(--line);
+            border: none;
+            border-radius: 99px;
+            height: 6px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        progress::-webkit-progress-bar {
+            background: var(--line);
+            border-radius: 99px;
+        }
+        progress::-webkit-progress-value {
+            background: var(--accent);
+            border-radius: 99px;
+        }
+        progress::-moz-progress-bar {
+            background: var(--accent);
+            border-radius: 99px;
+        }
+        .workspace {
+            align-items: start;
+            display: grid;
+            gap: 32px;
+            grid-template-columns: 220px minmax(0, 1fr);
+        }
+        .sidebar {
+            position: sticky;
+            top: 24px;
+        }
+        .sidebar label.search-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 650;
+            margin-bottom: 8px;
+        }
+        input[type='search'] {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            color: var(--ink);
+            padding: 10px 12px;
+            width: 100%;
+        }
+        .toggle {
+            align-items: center;
+            display: flex;
+            font-size: 13px;
+            gap: 9px;
+            margin: 16px 0 24px;
+        }
+        input[type='checkbox'] {
+            accent-color: var(--accent);
+            flex-shrink: 0;
+            height: 18px;
+            width: 18px;
+        }
+        nav a {
+            border-radius: 9px;
+            display: flex;
+            font-size: 13px;
+            gap: 8px;
+            justify-content: space-between;
+            margin: 4px -10px;
+            padding: 10px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background: var(--accent-soft);
+        }
+        .nav-count {
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+        .help {
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+        }
+        .help p {
+            margin: 0 0 12px;
+        }
+        code {
+            background: var(--accent-soft);
+            border-radius: 4px;
+            color: var(--accent);
+            font-size: 12px;
+            padding: 2px 5px;
+        }
+        .section {
+            margin-bottom: 32px;
+            scroll-margin-top: 24px;
+        }
+        .section-heading {
+            gap: 12px;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        h2 {
+            font-size: 20px;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+        .section-count {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .section-description {
+            color: var(--muted);
+            font-size: 12px;
+            margin: 0 0 14px;
+        }
+        .task-list {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            list-style: none;
+            margin: 0;
+            overflow: hidden;
+            padding: 0;
+        }
+        .task {
+            align-items: flex-start;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 12px;
+            padding: 16px 18px;
+        }
+        .task:last-child {
+            border-bottom: 0;
+        }
+        .task > input {
+            height: 20px;
+            margin: 3px 0 0;
+            width: 20px;
+        }
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .task-title {
+            font-size: 14px;
+            font-weight: 550;
+            overflow-wrap: anywhere;
+            text-decoration: none;
+        }
+        .task-title:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        .task-meta {
+            color: var(--muted);
+            flex-wrap: wrap;
+            font-size: 11px;
+            gap: 7px;
+            margin-top: 7px;
+        }
+        .repo {
+            font-weight: 600;
+        }
+        .badge {
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            font-size: 10px;
+            padding: 2px 7px;
+        }
+        .badge-context {
+            background: var(--warning-soft);
+            border-color: transparent;
+            color: var(--warning);
+        }
+        .task.done .task-title {
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+        .task.done {
+            background: color-mix(in srgb, var(--accent-soft) 30%, var(--surface));
+        }
+        .done-time {
+            color: var(--accent);
+            font-size: 10px;
+            margin-left: auto;
+        }
+        h3 {
+            font-size: 12px;
+            font-weight: 650;
+            margin: 20px 0 8px;
+        }
+        .priority-dot {
+            background: var(--muted);
+            border-radius: 50%;
+            display: inline-block;
+            height: 6px;
+            margin: 0 7px 1px 0;
+            width: 6px;
+        }
+        .priority-hourly {
+            background: #b65a48;
+        }
+        .priority-daily {
+            background: #b39030;
+        }
+        .priority-weekly {
+            background: var(--accent);
+        }
+        .empty {
+            border: 1px dashed var(--line);
+            border-radius: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
+            padding: 20px;
+        }
+        .notice {
+            background: var(--warning-soft);
+            border-radius: 12px;
+            color: var(--warning);
+            font-size: 13px;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+        }
+        .notice p {
+            margin: 4px 0;
+        }
+        .notice ul {
+            margin: 8px 0 0;
+            padding-left: 20px;
+        }
+        footer {
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 24px;
+            padding-top: 18px;
+        }
+        @media (max-width: 850px) {
+            .shell {
+                padding: 24px 20px 40px;
+            }
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .workspace {
+                gap: 12px;
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
+            .sidebar nav,
+            .sidebar .help {
+                display: none;
+            }
+            .toggle {
+                margin-bottom: 12px;
+            }
+        }
+        @media (max-width: 480px) {
+            .topbar {
+                align-items: flex-start;
+            }
+            .identity {
+                align-items: flex-end;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .summary-card {
+                padding: 15px;
+            }
+            .task {
+                padding: 14px 12px;
+            }
+            .done-time {
+                margin-left: 0;
+            }
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #17211e;
+                --surface: #1e2b26;
+                --ink: #e3eee6;
+                --muted: #a6b4ac;
+                --line: #35453d;
+                --accent: #81cba6;
+                --accent-soft: #253e32;
+                --warning: #eac28e;
+                --warning-soft: #403326;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <div class="mark" aria-hidden="true">K2</div>
+                <div><div class="brand-title">Your daily desk</div><div class="small">A little less tab juggling.</div></div>
+            </div>
+            <div class="identity"><span id="today"></span><span class="user" id="login"></span></div>
+        </header>
+        <main>
+            <div class="intro">
+                <div class="eyebrow">Focus / Follow through</div>
+                <h1>Your day, at a glance.</h1>
+                <p>Pick something, move it forward, check it off. Your progress stays here.</p>
+            </div>
+            <div id="storage-notice" class="notice" role="status" hidden></div>
+            <div id="fetch-notice" class="notice" hidden></div>
+            <div id="stale-notice" class="notice" hidden></div>
+            <div class="summary">
+                <div class="summary-card progress-card">
+                    <div class="summary-label">Completed today</div>
+                    <div class="summary-line"><span class="summary-value" id="completed-count">0</span><span class="small" id="total-count"></span></div>
+                    <progress id="progress" aria-label="Today's completion progress" max="1" value="0"></progress>
+                </div>
+                <a class="summary-card" href="#reviews"><div class="summary-label">PRs to review</div><div class="summary-value" id="reviews-count">0</div><div class="small">remaining today</div></a>
+                <a class="summary-card" href="#issues"><div class="summary-label">Your issues</div><div class="summary-value" id="issues-count">0</div><div class="small">remaining today</div></a>
+                <a class="summary-card" href="#pullRequests"><div class="summary-label">Your pull requests</div><div class="summary-value" id="pullRequests-count">0</div><div class="small">remaining today</div></a>
+            </div>
+            <div class="workspace">
+                <aside class="sidebar" aria-label="Checklist tools">
+                    <label class="search-label" for="search">Find your next thing</label>
+                    <input id="search" type="search" placeholder="Search titles, repos, labels…" autocomplete="off">
+                    <label class="toggle"><input id="hide-completed" type="checkbox">Hide completed</label>
+                    <nav aria-label="Work lists">
+                        <a href="#reviews">PRs to review <span class="nav-count" id="reviews-nav"></span></a>
+                        <a href="#issues">Your issues <span class="nav-count" id="issues-nav"></span></a>
+                        <a href="#pullRequests">Your pull requests <span class="nav-count" id="pullRequests-nav"></span></a>
+                    </nav>
+                    <div class="help">
+                        <p><strong>One day at a time.</strong><br>Checks save in this browser and reset each day. Checking an item means today's work on it is done.</p>
+                        <p><strong>Fresh GitHub data.</strong><br>Run <code>/k2-web</code> to refresh this snapshot. Use “refresh without opening” to reuse this tab, then reload it.</p>
+                        <p id="updated"></p>
+                    </div>
+                </aside>
+                <div id="sections"></div>
+            </div>
+        </main>
+        <footer>Local checklist · GitHub snapshot · Checks track your day and don't change GitHub.</footer>
+        <noscript><p class="notice">Enable JavaScript to display this checklist and save your progress.</p></noscript>
+    </div>
+    <script id="snapshot" type="application/json">__K2_SNAPSHOT__</script>
+    <script>
+        'use strict';
+
+        const snapshot = JSON.parse(document.getElementById('snapshot').textContent);
+        const sections = [
+            {id: 'reviews', title: 'PRs to review', description: 'Requested reviews and open PRs you have reviewed · most recently updated first'},
+            {id: 'issues', title: 'Your issues', description: 'Assigned to you · grouped by priority, oldest first'},
+            {id: 'pullRequests', title: 'Your pull requests', description: 'Authored by you or assigned to you · most recently updated first'},
+        ];
+        const priorities = ['Hourly', 'Daily', 'Weekly', 'Monthly', 'No Priority'];
+        const sectionIds = new Set(sections.map(section => section.id));
+        const search = document.getElementById('search');
+        const hideCompleted = document.getElementById('hide-completed');
+        let currentDay;
+        let storageKey;
+        let completed = {};
+
+        function localDay(date = new Date()) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function element(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+
+        function storageNotice(message) {
+            const notice = document.getElementById('storage-notice');
+            notice.textContent = message;
+            notice.hidden = false;
+        }
+
+        function isSavedTask(task) {
+            if (!task || !sectionIds.has(task.section)) return false;
+            const stringFields = ['id', 'title', 'url', 'repository', 'author', 'createdAt', 'updatedAt'];
+            if (!stringFields.every(field => typeof task[field] === 'string')) return false;
+            if (!Array.isArray(task.labels) || !task.labels.every(label => typeof label === 'string')) return false;
+            if (!priorities.includes(task.priority)) return false;
+            try {
+                const url = new URL(task.url);
+                return url.protocol === 'https:' && url.host === 'github.com' && task.id === `${task.section}:${task.url}`;
+            } catch {
+                return false;
+            }
+        }
+
+        function loadDay() {
+            currentDay = localDay();
+            storageKey = `k2-web:v1:${snapshot.login.toLowerCase()}:${currentDay}`;
+            completed = {};
+            document.getElementById('storage-notice').hidden = true;
+            try {
+                const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                if (!saved || typeof saved !== 'object' || Array.isArray(saved)) throw new Error('Invalid saved checklist');
+                for (const [id, entry] of Object.entries(saved)) {
+                    if (entry && isSavedTask(entry.task) && entry.task.id === id && localDay(new Date(entry.at)) === currentDay) {
+                        completed[id] = entry;
+                    }
+                }
+            } catch {
+                storageNotice('Saved progress is unavailable. Checks work in this tab, but may not survive a reload. Use a regular browser window with local storage enabled.');
+            }
+            document.getElementById('today').textContent = new Date().toLocaleDateString(undefined, {weekday: 'short', month: 'short', day: 'numeric'});
+            const stale = document.getElementById('stale-notice');
+            stale.hidden = localDay(new Date(snapshot.generatedAt)) === currentDay;
+            stale.textContent = 'This GitHub snapshot is from an earlier day. Run /k2-web for fresh data. The checkboxes track today.';
+        }
+
+        function allTasks() {
+            const tasks = snapshot.tasks.map(task => ({...task, live: true}));
+            const ids = new Set(tasks.map(task => task.id));
+            for (const entry of Object.values(completed)) {
+                if (!ids.has(entry.task.id)) tasks.push({...entry.task, live: false});
+            }
+            return tasks;
+        }
+
+        function setCompleted(task, checked) {
+            if (localDay() !== currentDay) loadDay();
+            if (checked) {
+                const {live, ...savedTask} = task;
+                completed[task.id] = {at: new Date().toISOString(), task: savedTask};
+            } else {
+                delete completed[task.id];
+            }
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(completed));
+            } catch {
+                storageNotice('Your browser could not save progress. Checks still work in this tab, but will be lost on reload.');
+            }
+            render();
+            const checkbox = [...document.querySelectorAll('.task > input')].find(input => input.dataset.taskId === task.id);
+            if (checkbox) checkbox.focus({preventScroll: true});
+        }
+
+        function taskRow(task) {
+            const entry = completed[task.id];
+            const row = element('li', entry ? 'task done' : 'task');
+            row.dataset.taskId = task.id;
+            const checkbox = element('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = Boolean(entry);
+            checkbox.dataset.taskId = task.id;
+            checkbox.setAttribute('aria-label', `Mark ${task.title} as ${entry ? 'not done' : 'done'} today`);
+            checkbox.addEventListener('change', () => setCompleted(task, checkbox.checked));
+            const content = element('div', 'task-content');
+            const title = element('a', 'task-title', task.title);
+            title.href = task.url;
+            title.target = '_blank';
+            title.rel = 'noopener noreferrer';
+            const meta = element('div', 'task-meta');
+            meta.append(element('span', 'repo', task.repository));
+            if (task.author) meta.append(element('span', '', `by ${task.author}`));
+            if (task.isDraft) meta.append(element('span', 'badge badge-context', 'Draft'));
+            if (task.isHold) meta.append(element('span', 'badge badge-context', 'On hold'));
+            if (task.isReviewing) meta.append(element('span', 'badge badge-context', 'Reviewing'));
+            for (const label of task.labels) {
+                if (label !== 'Reviewing') meta.append(element('span', 'badge', label));
+            }
+            if (!task.live) meta.append(element('span', 'badge', "Saved from today's checklist"));
+            if (entry) {
+                const time = new Date(entry.at).toLocaleTimeString(undefined, {hour: 'numeric', minute: '2-digit'});
+                meta.append(element('span', 'done-time', `Done ${time}`));
+            }
+            content.append(title, meta);
+            row.append(checkbox, content);
+            return row;
+        }
+
+        function taskList(tasks) {
+            const list = element('ul', 'task-list');
+            list.append(...tasks.map(taskRow));
+            return list;
+        }
+
+        function render() {
+            const tasks = allTasks();
+            const done = tasks.filter(task => completed[task.id]).length;
+            document.getElementById('completed-count').textContent = done;
+            document.getElementById('total-count').textContent = `of ${tasks.length} items`;
+            const progress = document.getElementById('progress');
+            progress.max = tasks.length || 1;
+            progress.value = done;
+            const container = document.getElementById('sections');
+            container.replaceChildren();
+            const query = search.value.trim().toLowerCase();
+            for (const section of sections) {
+                const items = tasks.filter(task => task.section === section.id);
+                const remaining = items.filter(task => !completed[task.id]).length;
+                document.getElementById(`${section.id}-count`).textContent = remaining;
+                document.getElementById(`${section.id}-nav`).textContent = remaining;
+                const visible = items.filter(task => {
+                    if (hideCompleted.checked && completed[task.id]) return false;
+                    return [task.title, task.repository, task.author, ...task.labels].join(' ').toLowerCase().includes(query);
+                });
+                const block = element('section', 'section');
+                block.id = section.id;
+                const heading = element('div', 'section-heading');
+                heading.append(element('h2', '', section.title), element('span', 'section-count', `${remaining} remaining / ${items.length}`));
+                block.append(heading, element('p', 'section-description', section.description));
+                if (visible.length === 0) {
+                    const message = !items.length ? 'Nothing here. A little breathing room.'
+                        : query ? 'No items match your search.' : 'All checked off for today.';
+                    block.append(element('p', 'empty', message));
+                } else if (section.id === 'issues') {
+                    for (const priority of priorities) {
+                        const group = visible.filter(task => task.priority === priority);
+                        if (!group.length) continue;
+                        group.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+                        const label = element('h3');
+                        label.append(element('span', `priority-dot priority-${priority.toLowerCase()}`), document.createTextNode(`${priority} · ${group.length}`));
+                        block.append(label, taskList(group));
+                    }
+                } else {
+                    visible.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+                    block.append(taskList(visible));
+                }
+                container.append(block);
+            }
+        }
+
+        document.getElementById('login').textContent = `@${snapshot.login}`;
+        document.getElementById('updated').textContent = `GitHub snapshot: ${new Date(snapshot.generatedAt).toLocaleString()}`;
+        if (snapshot.warnings.length) {
+            const notice = document.getElementById('fetch-notice');
+            notice.hidden = false;
+            notice.append(element('strong', '', 'Some GitHub lists may be incomplete.'));
+            const list = element('ul');
+            for (const warning of snapshot.warnings) list.append(element('li', '', warning));
+            notice.append(list);
+        }
+        search.addEventListener('input', render);
+        hideCompleted.addEventListener('change', render);
+        window.addEventListener('storage', event => {
+            if (event.key === storageKey || event.key === null) {
+                loadDay();
+                render();
+            }
+        });
+        function checkDay() {
+            if (localDay() !== currentDay) {
+                loadDay();
+                render();
+            }
+        }
+        window.addEventListener('focus', checkDay);
+        setInterval(checkDay, 60000);
+        loadDay();
+        render();
+    </script>
+</body>
+</html>

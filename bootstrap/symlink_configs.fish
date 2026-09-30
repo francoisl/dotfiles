@@ -140,6 +140,7 @@ safe_symlink $DOTFILES_DIR/opencode/opencode.jsonc ~/.config/opencode/opencode.j
 safe_symlink $DOTFILES_DIR/opencode/gh-api-read.md ~/.config/opencode/gh-api-read.md
 safe_symlink $DOTFILES_DIR/opencode/github-comment-preferences.md ~/.config/opencode/github-comment-preferences.md
 safe_symlink $DOTFILES_DIR/opencode/commands/crit.md ~/.config/opencode/commands/crit.md
+safe_symlink $DOTFILES_DIR/opencode/commands/k2-web.md ~/.config/opencode/commands/k2-web.md
 safe_symlink $DOTFILES_DIR/opencode/plugins/crit.ts ~/.config/opencode/plugins/crit.ts
 safe_symlink $DOTFILES_DIR/opencode/plugins/rtk.ts ~/.config/opencode/plugins/rtk.ts
 safe_symlink $DOTFILES_DIR/opencode/plugins/lib/crit-wait-notify.js ~/.config/opencode/plugins/lib/crit-wait-notify.js
