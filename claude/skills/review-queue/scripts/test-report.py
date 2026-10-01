@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from textwrap import dedent
 from unittest.mock import patch
 
 
@@ -203,6 +204,135 @@ class ReportTest(unittest.TestCase):
         self.assertEqual(len(prs), 2)
         self.assertTrue(all(pr['status'] == 'NEEDS_HUMAN' for pr in prs))
         self.assertTrue(all('No local clone' in pr['summary'] for pr in prs))
+
+
+class ReviewDriverTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.directory = Path(self.temp.name)
+        tools = self.directory / 'bin'
+        tools.mkdir()
+        self.calls = self.directory / 'calls.jsonl'
+        clones = self.directory / 'clones'
+        for repo in ('ExampleRepo', 'OtherRepo'):
+            (clones / repo / '.git').mkdir(parents=True)
+        self.env = dict(os.environ, PATH=f'{tools}{os.pathsep}{os.environ["PATH"]}',
+                        HOME=str(self.directory / 'home'), TMPDIR=str(self.directory),
+                        RQ_CLONE_ROOT=str(clones), RQ_OWNER='ExampleOrg', RQ_JOBS='2',
+                        TEST_REVIEW_CALLS=str(self.calls), TEST_REVIEW_EXIT='0')
+        scripts = {
+            'timeout': '#!/usr/bin/env bash\nshift\nexec "$@"\n',
+            'git': dedent('''\
+                #!/usr/bin/env python3
+                import shutil
+                import sys
+                from pathlib import Path
+                args = sys.argv[1:]
+                if args[:1] == ['-C']:
+                    args = args[2:]
+                if args[:1] == ['rev-parse']:
+                    print('a' * 40)
+                elif args[:2] == ['worktree', 'add']:
+                    Path(args[-2]).mkdir()
+                elif args[:2] == ['worktree', 'remove']:
+                    shutil.rmtree(args[-1])
+                '''),
+            'claude': dedent('''\
+                #!/usr/bin/env python3
+                import json
+                import os
+                import sys
+                classifier = '--model' in sys.argv
+                with open(os.environ['TEST_REVIEW_CALLS'], 'a') as calls:
+                    calls.write(json.dumps({'args': sys.argv[1:], 'cwd': os.getcwd(),
+                                            'stdin': sys.stdin.read() if classifier else ''}) + '\\n')
+                if classifier:
+                    print('VERDICT: READY_TO_MERGE\\nBLOCKING: 0\\nTOTAL: 0\\nONE_LINER: No blockers.\\nTOP: none')
+                else:
+                    code = int(os.environ['TEST_REVIEW_EXIT'])
+                    print('Unknown skill' if code else 'No findings in this review.')
+                    sys.exit(code)
+                '''),
+        }
+        for name, contents in scripts.items():
+            executable = tools / name
+            executable.write_text(contents, encoding='utf-8')
+            executable.chmod(0o700)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def run_batch(self, *options, level='medium', pairs=('ExampleRepo', '1', 'OtherRepo', '2')):
+        return subprocess.run([
+            'bash', str(Path(__file__).with_name('run-batch.sh')), str(self.directory / 'batch'), level,
+            *options, *pairs,
+        ], env=self.env, capture_output=True, text=True, timeout=30, check=False)
+
+    def review_calls(self):
+        calls = [json.loads(line) for line in self.calls.read_text(encoding='utf-8').splitlines()]
+        return [call for call in calls if '--model' not in call['args']]
+
+    def test_default_batch_keeps_the_code_review_command_and_classifier(self):
+        result = self.run_batch(level='high')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        calls = self.review_calls()
+        self.assertEqual(sorted(call['args'][1] for call in calls), ['/code-review high 1', '/code-review high 2'])
+        for call in calls:
+            self.assertIn('--disallowed-tools', call['args'])
+            instructions = call['args'][call['args'].index('--append-system-prompt') + 1]
+            self.assertIn('Do not edit source files', instructions)
+            self.assertFalse(Path(call['cwd']).exists(), 'The isolated review worktree must be cleaned up')
+        self.assertEqual(len(self.calls.read_text(encoding='utf-8').splitlines()), 4)
+        self.assertTrue((self.directory / 'batch' / 'index.html').is_file())
+
+    def test_selected_ce_skill_reaches_every_pr_with_full_depth_when_requested(self):
+        result = self.run_batch('--review-skill', 'ce-code-review', level='high')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        prompts = sorted(call['args'][1].splitlines()[0] for call in self.review_calls())
+        self.assertEqual(prompts, [
+            '/compound-engineering:ce-code-review mode:agent depth:full https://github.com/ExampleOrg/ExampleRepo/pull/1',
+            '/compound-engineering:ce-code-review mode:agent depth:full https://github.com/ExampleOrg/OtherRepo/pull/2',
+        ])
+        for number, repo in [(1, 'ExampleRepo'), (2, 'OtherRepo')]:
+            fields = renderer.parse_verdict(self.directory / 'batch' / f'{repo}-{number}.verdict')
+            self.assertEqual(fields['REVIEW_SKILL'], 'ce-code-review')
+            self.assertEqual(fields['VERDICT'], 'READY_TO_MERGE')
+
+    def test_ce_skill_chooses_its_own_depth_by_default(self):
+        result = self.run_batch('--review-skill', '/compound-engineering:ce-code-review', pairs=('ExampleRepo', '1'))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        prompt = self.review_calls()[0]['args'][1]
+        self.assertEqual(prompt.splitlines()[0],
+                         '/compound-engineering:ce-code-review mode:agent https://github.com/ExampleOrg/ExampleRepo/pull/1')
+        self.assertNotIn('depth:full', prompt)
+
+    def test_other_review_skills_receive_the_pr_url_and_read_only_constraints(self):
+        result = self.run_batch('--review-skill', 'example:deep-review', pairs=('ExampleRepo', '1'))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        args = self.review_calls()[0]['args']
+        self.assertEqual(args[1], '/example:deep-review https://github.com/ExampleOrg/ExampleRepo/pull/1')
+        instructions = args[args.index('--append-system-prompt') + 1]
+        self.assertIn('read-only', instructions)
+        self.assertIn('Do not edit source files', instructions)
+        self.assertIn('do not substitute another review', instructions)
+
+    def test_missing_or_invalid_skill_is_rejected_before_starting_a_batch(self):
+        for options in [('--review-skill',), ('--review-skill', ''), ('--review-skill', 'ce-code-review --apply')]:
+            with self.subTest(options=options):
+                result = self.run_batch(*options, pairs=())
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertFalse((self.directory / 'batch').exists())
+                self.assertFalse(self.calls.exists())
+
+    def test_failed_custom_review_with_output_is_not_classified_as_ready(self):
+        self.env['TEST_REVIEW_EXIT'] = '1'
+        result = self.run_batch('--review-skill', 'unavailable-review', pairs=('ExampleRepo', '1'))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        fields = renderer.parse_verdict(self.directory / 'batch' / 'ExampleRepo-1.verdict')
+        self.assertEqual(fields['VERDICT'], 'NEEDS_HUMAN')
+        self.assertIn('exited 1', fields['ONE_LINER'])
+        self.assertEqual(len(self.calls.read_text(encoding='utf-8').splitlines()), 1,
+                         'A failed review must not reach the ready-to-merge classifier')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 ---
 name: review-queue
-description: Drain your GitHub code-review backlog and open a browser summary grouped by PR. Finds PRs waiting on your review, skips those that aren't your turn, runs /code-review on the cheapest ones in isolated worktrees in parallel, and shows verdicts, findings, full reports, and saved handled checkboxes. Read-only. Use when asked to review, triage, clear, or drain a PR review queue. Pair with /loop for periodic sweeps.
+description: Drain your GitHub code-review backlog and open a browser summary grouped by PR. Finds PRs waiting on your review, skips those that aren't your turn, runs /code-review or an optional named review skill in isolated worktrees in parallel, and shows verdicts, findings, full reports, and saved handled checkboxes. Read-only. Use when asked to review, triage, clear, or drain a PR review queue. Pair with /loop for periodic sweeps.
 ---
 
 # Review Queue
@@ -21,14 +21,29 @@ All optional; the skill works with no arguments.
   Pass it as `--limit` to `fetch-queue.py`.
 - **A level** (`/review-queue high`) — review depth, one of
   `low|medium|high|max`. Default `medium`: fewer, higher-confidence findings,
-  which is what triage wants. Pass it as the second argument to `run-batch.sh`.
+  which is what the default `/code-review` uses for triage. Pass it as the second
+  argument to `run-batch.sh`. For `ce-code-review`, `high` or `max` forces the
+  full review workflow; `low` or `medium` lets CE choose its own depth. Other
+  skills use their own defaults.
+- **A review skill** (`/review-queue ce-code-review` or
+  `/review-queue 3 high ce-code-review`) — use that skill for every PR this run.
+  Default `code-review`; selecting another skill does not change future runs.
+  Also accept `--review-skill <name>` or natural wording such as “using ce-code-review”.
+  Pass it to `run-batch.sh` as `--review-skill <name>` after the level and before
+  the repo/PR pairs. Skill names may include a plugin prefix, such as
+  `compound-engineering:ce-code-review`, and an optional leading `/`.
+  Resolve the name against the skills available to the headless Claude runner;
+  plugin skills must be installed and enabled there. The installed CE skill is
+  `ce-code-review` (singular); resolve “ce-code-reviews” to it. Never silently
+  substitute the default when the requested skill is unavailable.
 - **A repo name** (`/review-queue Integration-Server`) — restrict to one repo via
   `--repo`.
 - **Browser output is the default.** “Terminal only” or “without opening” passes
-  `--no-open` to the browser renderer. If the stable latest report already exists,
-  use `--no-open` unless the user asks to open it. The existing tab updates
-  automatically. Under `/loop`, open the first report only; generate later reports
-  without new tabs.
+  `--no-open` to the browser renderer. At the start of the run, check whether the
+  stable latest report already exists. If it does, use `--no-open` unless the
+  user asks to open it. Check before Step 2 creates the report so the first run
+  still opens a tab. The existing tab updates automatically. Under `/loop`, open
+  the first report only; generate later reports without new tabs.
 - **“Open the last report”** — open `~/.local/share/review-queue/index.html`
   without fetching GitHub or starting new reviews. Say it contains saved results.
 - **PR URLs** — skip Step 1 entirely and pass those PRs straight to Step 2,
@@ -86,6 +101,14 @@ Pass every selected PR to the batch driver as `<repo> <number>` pairs:
   IS-Templates 5924
 ```
 
+For a full-depth CE review, for example:
+
+```bash
+<skill-dir>/scripts/run-batch.sh <out-dir> high --review-skill ce-code-review \
+  Integration-Server 9254 \
+  Web-Expensify 55605
+```
+
 **Run this in the background if the shell tool supports it.** A single PR takes
 roughly 4 minutes and can take much longer on a big repo, so any real batch will
 blow past a short foreground timeout. With a foreground-only tool, pass an
@@ -94,10 +117,16 @@ It runs 3 reviews concurrently (`RQ_JOBS` to
 change that) and prints every verdict at the end.
 
 Each PR's review is self-contained: it fetches the PR head into a per-PR ref,
-creates a detached git worktree at that commit, runs `/code-review` there in a
+creates a detached git worktree at that commit, runs the selected review skill in a
 headless `claude -p`, classifies the report into a verdict, and removes the
 worktree. It always exits 0 and always writes a `.verdict`, so a single failure
 cannot sink the batch or silently drop a PR.
+
+The default invocation stays `/code-review <level> <PR>`. Other skills receive
+the full PR URL and read-only review instructions. `ce-code-review` uses Claude's
+`/compound-engineering:ce-code-review` command with `mode:agent`; `high` and `max`
+also pass `depth:full`. Each verdict records `REVIEW_SKILL`. A failed review is
+`NEEDS_HUMAN`, including failures that emit a report before exiting.
 
 Why a worktree: the user's clones normally sit on unrelated feature branches with
 uncommitted work. Reviewing in place would feed the review that WIP as
@@ -106,7 +135,8 @@ user's working tree untouched.
 
 While the batch runs, do not poll in a tight loop. Wait for the background task
 to report completion, or for the foreground command to finish. The batch writes
-the browser report automatically without opening a tab; Step 3 opens it.
+the browser report automatically without opening a tab; Step 3 opens it on the
+first run or reuses the existing tab.
 
 ## Step 3 — Report
 
@@ -193,11 +223,15 @@ End with a one-line summary, including metadata errors when present:
 
 ## Verification
 
-Run the report regression tests with Python's standard library:
+Run the report and review-driver regression tests with Python's standard library:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 <skill-dir>/scripts/test-report.py
 ```
+
+The driver tests stub Git and Claude. They check the default command, skill
+selection across a batch, CE depth arguments, read-only prompts, invalid names,
+and review failures without running paid AI reviews or fetching real PRs.
 
 The browser test needs an installed Playwright module and an existing temporary parent:
 

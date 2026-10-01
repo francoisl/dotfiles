@@ -2,7 +2,7 @@
 # Review one PR in a throwaway git worktree at the PR's head, then classify the
 # result into a compact verdict.
 #
-# Usage: review-pr.sh <repo-name> <pr-number> <out-dir> [level]
+# Usage: review-pr.sh <repo-name> <pr-number> <out-dir> [level] [review-skill]
 #
 # Writes:
 #   <out-dir>/<repo>-<pr>.md        full review report
@@ -19,11 +19,14 @@
 
 set -uo pipefail
 
-REPO_NAME="${1:?usage: review-pr.sh <repo-name> <pr-number> <out-dir> [level]}"
+REPO_NAME="${1:?usage: review-pr.sh <repo-name> <pr-number> <out-dir> [level] [review-skill]}"
 PR="${2:?missing pr number}"
 OUT_DIR="${3:?missing out dir}"
 LEVEL="${4:-medium}"
+REVIEW_SKILL="${5:-code-review}"
+REVIEW_SKILL="${REVIEW_SKILL#/}"
 
+OWNER="${RQ_OWNER:-Expensify}"
 CLONE_ROOT="${RQ_CLONE_ROOT:-$HOME/Expensidev}"
 CLONE="$CLONE_ROOT/$REPO_NAME"
 TIMEOUT="${RQ_TIMEOUT:-1200}"
@@ -49,6 +52,7 @@ trap cleanup EXIT INT TERM
 bail() {
     cat >"$VERDICT" <<EOF
 PR: ${REPO_NAME}#${PR}
+REVIEW_SKILL: ${REVIEW_SKILL}
 VERDICT: NEEDS_HUMAN
 BLOCKING: 0
 TOTAL: 0
@@ -59,6 +63,9 @@ HEAD: ${SHA:-}
 EOF
     exit 0
 }
+
+[[ "$REVIEW_SKILL" =~ ^[A-Za-z0-9][A-Za-z0-9_-]*(:[A-Za-z0-9][A-Za-z0-9_-]*)?$ ]] \
+    || bail "Invalid review skill name: $REVIEW_SKILL."
 
 [ -d "$CLONE/.git" ] || bail "No local clone at $CLONE, so the review never ran."
 
@@ -83,7 +90,28 @@ done
 cd "$WT" || bail "Could not enter worktree ${WT}."
 
 # ---- Pass 1: the actual review, at the PR's head, in an isolated worktree ----
-timeout "$TIMEOUT" claude -p "/code-review $LEVEL $PR" \
+case "$REVIEW_SKILL" in
+    code-review)
+        REVIEW_PROMPT="/code-review $LEVEL $PR"
+        ;;
+    ce-code-review|compound-engineering:ce-code-review)
+        REVIEW_ARGS="mode:agent"
+        if [ "$LEVEL" = "high" ] || [ "$LEVEL" = "max" ]; then
+            REVIEW_ARGS="$REVIEW_ARGS depth:full"
+        fi
+        REVIEW_PROMPT="/compound-engineering:ce-code-review $REVIEW_ARGS https://github.com/$OWNER/$REPO_NAME/pull/$PR"
+        ;;
+    *)
+        REVIEW_PROMPT="/$REVIEW_SKILL https://github.com/$OWNER/$REPO_NAME/pull/$PR"
+        ;;
+esac
+REVIEW_INSTRUCTIONS="This is a read-only batch review in an isolated worktree at the PR's head.
+Do not edit source files, commit, push, post GitHub reviews or comments, or apply fixes.
+Return your full review in the final response, using the skill's own output format.
+If the selected skill is unavailable or cannot complete, report that failure;
+do not substitute another review or claim that the PR is ready to merge."
+timeout "$TIMEOUT" claude -p "$REVIEW_PROMPT" \
+    --append-system-prompt "$REVIEW_INSTRUCTIONS" \
     --permission-mode dontAsk \
     --output-format text \
     --strict-mcp-config \
@@ -92,6 +120,7 @@ timeout "$TIMEOUT" claude -p "/code-review $LEVEL $PR" \
 rc=$?
 
 [ "$rc" -eq 124 ] && bail "Review timed out after ${TIMEOUT}s; too large for auto-triage."
+[ "$rc" -eq 0 ] || bail "Review exited ${rc}; read ${OUT} and ${ERR}."
 [ -s "$OUT" ] || bail "Review exited ${rc} with no output; see ${ERR}."
 
 # The review cites paths inside the throwaway worktree, which is deleted before
@@ -129,6 +158,9 @@ VERDICT rules:
   NEEDS_CHANGES  - at least one genuine correctness, security, data-loss or regression bug.
   NEEDS_HUMAN    - the report is inconclusive, or the change is too domain-specific to judge.
 
+An unavailable skill, incomplete review, or failed/degraded/skipped review status
+must be NEEDS_HUMAN, even when the report contains no findings.
+
 Be calibrated: a false READY_TO_MERGE costs the user far more than a false
 NEEDS_CHANGES, but inflating nits into blockers defeats the triage. Make
 ONE_LINER decision-useful -- say what the risk is, not that a review happened.
@@ -157,6 +189,7 @@ fi
 
 {
     echo "PR: ${REPO_NAME}#${PR}"
+    echo "REVIEW_SKILL: $REVIEW_SKILL"
     printf '%s\n' "$body"
     echo "REPORT: $OUT"
     echo "HEAD: $SHA"
