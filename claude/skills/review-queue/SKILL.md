@@ -25,8 +25,10 @@ All optional; the skill works with no arguments.
 - **A repo name** (`/review-queue Integration-Server`) — restrict to one repo via
   `--repo`.
 - **Browser output is the default.** “Terminal only” or “without opening” passes
-  `--no-open` to the browser renderer. Under `/loop`, open the first report only;
-  generate later reports without new tabs.
+  `--no-open` to the browser renderer. If the stable latest report already exists,
+  use `--no-open` unless the user asks to open it. The existing tab updates
+  automatically. Under `/loop`, open the first report only; generate later reports
+  without new tabs.
 - **“Open the last report”** — open `~/.local/share/review-queue/index.html`
   without fetching GitHub or starting new reviews. Say it contains saved results.
 - **PR URLs** — skip Step 1 entirely and pass those PRs straight to Step 2,
@@ -119,6 +121,11 @@ later `/loop` iterations. The stable latest report is
 `~/.local/share/review-queue/index.html`, and each batch keeps `<out-dir>/index.html`.
 Relay the file link printed by the renderer so the user can bookmark it.
 
+The latest report checks for regenerated results every 30 seconds while visible,
+when the window gains focus, and when you return to the tab. It updates in place,
+preserving filters, handled checks, collapsed cards, and open unchanged reviews.
+Batch archives stay fixed. An older open tab needs one reload to load this behavior.
+
 The renderer reads verdicts and full `.md` reports directly from disk.
 **Do not read full reports into model context** unless the user asks about a
 specific PR. Read the small verdict files only when needed for a terminal summary.
@@ -168,9 +175,11 @@ End with a one-line summary, including metadata errors when present:
 - **Saved results only.** Rendering or reopening a batch does not fetch GitHub
   or run another review. For explicit PR URLs, `targets.txt` and verdicts are
   sufficient; absent queue metadata, cards use repository/PR identifiers.
-- **Local output.** Generated HTML and `queue.json` contain private review data.
-  Keep them outside the public dotfiles repo. The checked-in `report.html` is
-  only a template. The renderer needs Python 3.9+ and uses no external assets.
+- **Local output.** Generated HTML, its sibling `.refresh.js`, and `queue.json`
+  contain private review data. Keep them outside the public dotfiles repo. The checked-in `report.html` is
+  only a template. Keep the latest HTML and `.refresh.js` together for automatic
+  updates. The HTML still displays its saved results without the companion file.
+  The renderer needs Python 3.9+ and uses no external assets.
 - **Loop-friendly.** Under `/loop`, report and stop; the next iteration re-fetches
   fresh state. Nothing is cached between runs.
 - **Nothing is left behind.** Each review removes its worktree and its
@@ -197,4 +206,5 @@ node <skill-dir>/scripts/test-report-browser.mjs /path/to/playwright/index.mjs /
 ```
 
 It checks the update time, per-PR grouping, safe full-review rendering, commit links, filtering,
-collapsing, saved checkboxes and collapsed cards, and resetting both when a review changes.
+collapsing, saved checkboxes and collapsed cards, automatic updates in an existing tab,
+and resetting progress when a review changes.

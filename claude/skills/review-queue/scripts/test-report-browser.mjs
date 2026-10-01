@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {mkdtemp, rm} from 'node:fs/promises';
+import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
@@ -9,7 +9,7 @@ if (!playwrightPath || !tempParent) throw new Error('Pass an installed Playwrigh
 const {chromium} = await import(pathToFileURL(path.resolve(playwrightPath)).href);
 const directory = await mkdtemp(path.join(tempParent, 'review-report-'));
 const scripts = path.dirname(fileURLToPath(import.meta.url));
-const output = path.join(directory, 'index.html');
+const output = path.join(directory, 'latest report.html');
 const malicious = '</script><img src=x onerror="window.injected=true">';
 const pr = (number, status) => ({
     id: `review-${number}`, repo: 'ExampleRepo', number, status, title: `Example change ${number}`,
@@ -33,7 +33,9 @@ function write(value) {
         'import importlib.util, json, sys; from pathlib import Path; '
         + 'spec = importlib.util.spec_from_file_location("renderer", sys.argv[1]); '
         + 'module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module); '
-        + 'module.write_html(Path(sys.argv[2]), module.render_html(json.loads(sys.argv[3])))',
+        + 'snapshot = json.loads(sys.argv[3]); module.build_snapshot = lambda _: snapshot; '
+        + 'sys.argv = [sys.argv[1], str(Path(sys.argv[2]).parent), "--output", sys.argv[2], "--no-open"]; '
+        + 'sys.exit(module.main())',
         path.join(scripts, 'render-report.py'), output, JSON.stringify(value),
     ]);
 }
@@ -41,6 +43,7 @@ function write(value) {
 let browser;
 try {
     write(snapshot);
+    const originalHTML = await readFile(output, 'utf8');
     browser = await chromium.launch({channel: 'chrome', headless: true});
     const page = await browser.newPage({locale: 'en-US', timezoneId: 'UTC', viewport: {width: 1280, height: 960}});
     const errors = [];
@@ -97,6 +100,72 @@ try {
     await page.reload();
     assert.equal(await page.locator('#pr-0 input').isChecked(), true, 'Rerendering the same result must retain its handled state');
     assert.equal(await page.locator('#pr-0 .collapse-toggle').getAttribute('aria-expanded'), 'false', 'Rerendering the same result must retain its collapsed state');
+    await page.waitForFunction(() => !document.querySelector('script[src]'));
+    await page.evaluate(() => { document.querySelector('#pr-0').dataset.unchanged = 'yes'; });
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForFunction(() => !document.querySelector('script[src]'));
+    assert.equal(await page.locator('#pr-0').getAttribute('data-unchanged'), 'yes', 'Polling unchanged data must not rebuild the cards');
+
+    await page.locator('#pr-1 details > summary').click();
+    await page.locator('#search').fill('example');
+    await page.locator('#status').selectOption('reviewed');
+    await page.locator('#hide-handled').check();
+    const currentUrl = page.url();
+    const refreshed = {...snapshot, generatedAt: '2026-09-30T14:31:00Z', prs: snapshot.prs.map((item, index) =>
+        index === 0 ? {...item, title: 'Refreshed example change'} : item)};
+    write(refreshed);
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForFunction(() => document.querySelector('#pr-0 h2').textContent === 'Refreshed example change', null, {timeout: 3000});
+    assert.equal(await page.locator('#pr-0 input').isChecked(), true, 'Automatic refresh must retain handled state for unchanged reviews');
+    assert.equal(await page.locator('#pr-0 .collapse-toggle').getAttribute('aria-expanded'), 'false', 'Automatic refresh must retain collapsed state');
+    assert.equal(await page.locator('#pr-1 details').getAttribute('open'), '', 'Automatic refresh must keep an unchanged full review open');
+    assert.equal(await page.locator('#search').inputValue(), 'example', 'Automatic refresh must retain search');
+    assert.equal(await page.locator('#status').inputValue(), 'reviewed', 'Automatic refresh must retain the verdict filter');
+    assert.equal(await page.locator('#hide-handled').isChecked(), true, 'Automatic refresh must retain the handled filter');
+    assert.equal(await page.locator('.card:visible').count(), 1);
+    assert.equal(page.url(), currentUrl, 'Automatic refresh must reuse the current URL and tab');
+
+    await page.locator('#search').fill('');
+    await page.locator('#status').selectOption('all');
+    await page.locator('#hide-handled').uncheck();
+    write({...refreshed, generatedAt: '2026-09-30T14:32:00Z', prs: refreshed.prs.map((item, index) =>
+        index === 0 ? {...item, id: 'auto-revised-review', title: 'Automatically revised review'} : item)});
+    await page.clock.runFor(30000);
+    await page.waitForFunction(() => document.querySelector('#pr-0 h2').textContent === 'Automatically revised review', null, {timeout: 3000});
+    assert.equal(await page.locator('#pr-0 input').isChecked(), false, 'A periodically refreshed changed review must start unchecked');
+    assert.equal(await page.locator('#pr-0 .collapse-toggle').getAttribute('aria-expanded'), 'true', 'A periodically refreshed changed review must start expanded');
+
+    write({...snapshot, generatedAt: '2026-09-30T14:33:00Z', batchId: 'next-batch', batchName: 'Next run', prs: [pr(6, 'READY_TO_MERGE')]});
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForFunction(() => document.querySelector('#pr-0 h2').textContent === 'Example change 6', null, {timeout: 3000});
+    assert.equal(await page.locator('.card').count(), 1, 'A new batch must replace the previous results in the existing tab');
+    assert.equal(await page.locator('#handled-count').textContent(), '0', 'A new batch must load its own progress');
+    assert.match(await page.locator('#footer').textContent(), /Batch: Next run\./);
+
+    await writeFile(output, originalHTML);
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('#pr-0 h2').textContent === 'Example change 6', null, {timeout: 3000});
+    assert.equal(await page.locator('.card').count(), 1, 'Loading stale HTML must still pick up the latest companion data');
+
+    const archivedPage = await browser.newPage();
+    await archivedPage.clock.install({time: new Date('2026-09-30T14:33:00Z')});
+    await archivedPage.goto(pathToFileURL(path.join(directory, 'index.html')).href);
+    await page.waitForFunction(() => !document.querySelector('script[src]'));
+    await rm(path.join(directory, 'latest report.refresh.js'));
+    const missingFile = page.waitForEvent('requestfailed', {predicate: request => request.url().includes('.refresh.js')});
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await missingFile;
+    await page.waitForFunction(() => !document.querySelector('script[src]'));
+    assert.equal(await page.locator('#pr-0 h2').textContent(), 'Example change 6', 'A missing companion must leave saved results usable');
+
+    write({...snapshot, generatedAt: '2026-09-30T14:34:00Z', batchId: 'next-batch', prs: [pr(7, 'READY_TO_MERGE')]});
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await page.waitForFunction(() => document.querySelector('#pr-0 h2').textContent === 'Example change 7', null, {timeout: 3000});
+    await archivedPage.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await archivedPage.clock.runFor(30000);
+    assert.equal(await archivedPage.locator('#pr-0 h2').textContent(), 'Example change 6', 'An archived report must not follow latest results');
+    await archivedPage.close();
+
     write({...snapshot, prs: snapshot.prs.map((item, index) => index === 0 ? {...item, id: 'revised-review'} : item)});
     await page.reload();
     assert.equal(await page.locator('#pr-0 input').isChecked(), false, 'A changed review must start unchecked');
@@ -107,7 +176,7 @@ try {
     await page.setViewportSize({width: 390, height: 844});
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     assert.deepEqual(errors, []);
-    console.log('Browser checks passed: update time, per-PR cards, safe Markdown, commit links, filtering, collapsing, persistence, and revised results.');
+    console.log('Browser checks passed: update time, per-PR cards, safe Markdown, commit links, filtering, collapsing, persistence, automatic refresh, and revised results.');
 } finally {
     if (browser) await browser.close();
     await rm(directory, {recursive: true, force: true});

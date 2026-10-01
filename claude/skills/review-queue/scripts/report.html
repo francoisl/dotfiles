@@ -468,14 +468,14 @@
     <script id="snapshot" type="application/json">__REVIEW_SNAPSHOT__</script>
     <script>
         'use strict';
-        const snapshot = JSON.parse(document.getElementById('snapshot').textContent);
+        let snapshot = JSON.parse(document.getElementById('snapshot').textContent);
         const labels = {
             READY_TO_MERGE: 'Ready to merge', MINOR_NITS: 'Minor nits only', NEEDS_CHANGES: 'Needs changes',
             NEEDS_HUMAN: 'Needs your judgement', SKIPPED: 'Skipped', DEFERRED: 'Not reviewed this run', ERROR: 'Metadata fetch failed',
         };
         const reviewed = new Set(['READY_TO_MERGE', 'MINOR_NITS', 'NEEDS_CHANGES', 'NEEDS_HUMAN']);
-        const storageKey = `review-queue:v1:${snapshot.batchId}`;
-        const collapsedKey = `${storageKey}:collapsed`;
+        let storageKey = `review-queue:v1:${snapshot.batchId}`;
+        let collapsedKey = `${storageKey}:collapsed`;
         const search = document.getElementById('search');
         const status = document.getElementById('status');
         const hideHandled = document.getElementById('hide-handled');
@@ -740,21 +740,55 @@
             option.value = value;
             status.append(option);
         }
-        const countStatus = value => snapshot.prs.filter(pr => pr.status === value).length;
-        document.getElementById('ready-count').textContent = countStatus('READY_TO_MERGE');
-        document.getElementById('changes-count').textContent = countStatus('NEEDS_CHANGES');
-        document.getElementById('human-count').textContent = countStatus('NEEDS_HUMAN') + countStatus('ERROR');
-        document.getElementById('handled-total').textContent = `of ${snapshot.prs.length} PRs in this batch`;
-        document.getElementById('batch').textContent = snapshot.login ? `@${snapshot.login}` : snapshot.owner;
-        showUpdated();
-        window.addEventListener('focus', showUpdated);
-        setInterval(showUpdated, 60000);
-        const reviewCount = snapshot.prs.filter(pr => reviewed.has(pr.status)).length;
-        document.getElementById('run-summary').textContent = `${reviewCount} review results · ${countStatus('SKIPPED')} skipped · ${countStatus('DEFERRED')} deferred · ${countStatus('ERROR')} metadata errors`;
-        const captured = snapshot.queueCapturedAt ? `Queue captured ${new Date(snapshot.queueCapturedAt).toLocaleString()}. ` : 'Historical batch; queue metadata is unavailable. ';
-        document.getElementById('footer').textContent = `${captured}Batch: ${snapshot.batchName}. Handled checks and collapsed cards save locally for this batch and don't change GitHub. Changed review results start unchecked and expanded.`;
-        loadState();
-        document.getElementById('cards').append(...snapshot.prs.map(card));
+        function render() {
+            const countStatus = value => snapshot.prs.filter(pr => pr.status === value).length;
+            document.getElementById('ready-count').textContent = countStatus('READY_TO_MERGE');
+            document.getElementById('changes-count').textContent = countStatus('NEEDS_CHANGES');
+            document.getElementById('human-count').textContent = countStatus('NEEDS_HUMAN') + countStatus('ERROR');
+            document.getElementById('handled-total').textContent = `of ${snapshot.prs.length} PRs in this batch`;
+            document.getElementById('batch').textContent = snapshot.login ? `@${snapshot.login}` : snapshot.owner;
+            showUpdated();
+            const reviewCount = snapshot.prs.filter(pr => reviewed.has(pr.status)).length;
+            document.getElementById('run-summary').textContent = `${reviewCount} review results · ${countStatus('SKIPPED')} skipped · ${countStatus('DEFERRED')} deferred · ${countStatus('ERROR')} metadata errors`;
+            const captured = snapshot.queueCapturedAt ? `Queue captured ${new Date(snapshot.queueCapturedAt).toLocaleString()}. ` : 'Historical batch; queue metadata is unavailable. ';
+            document.getElementById('footer').textContent = `${captured}Batch: ${snapshot.batchName}. Handled checks and collapsed cards save locally for this batch and don't change GitHub. Changed review results start unchecked and expanded.`;
+            cards.clear();
+            document.getElementById('navigation').replaceChildren();
+            document.getElementById('cards').replaceChildren(...snapshot.prs.map(card));
+            update();
+        }
+        window.reviewQueueRefresh = next => {
+            if (Date.parse(next.generatedAt) <= Date.parse(snapshot.generatedAt)) return;
+            const openReviews = [...cards].filter(([, {node}]) => node.querySelector('details')?.open).map(([id]) => id);
+            const {scrollX, scrollY} = window;
+            const changedBatch = next.batchId !== snapshot.batchId;
+            snapshot = next;
+            if (changedBatch) {
+                storageKey = `review-queue:v1:${snapshot.batchId}`;
+                collapsedKey = `${storageKey}:collapsed`;
+                loadState();
+            }
+            render();
+            if (!changedBatch) {
+                for (const id of openReviews) {
+                    const details = cards.get(id)?.node.querySelector('details');
+                    if (details) details.open = true;
+                }
+            }
+            window.scrollTo(scrollX, scrollY);
+        };
+        let refreshScript = null;
+        let refreshCount = 0;
+        function checkForUpdates() {
+            if (!snapshot.refreshFile || document.hidden || refreshScript) return;
+            const script = element('script');
+            const url = new URL(snapshot.refreshFile, window.location.href);
+            url.searchParams.set('refresh', `${Date.now()}-${refreshCount++}`);
+            script.src = url.href;
+            refreshScript = script;
+            script.onload = script.onerror = () => { script.remove(); refreshScript = null; };
+            document.head.append(script);
+        }
         search.addEventListener('input', update);
         status.addEventListener('change', update);
         hideHandled.addEventListener('change', update);
@@ -763,7 +797,13 @@
         window.addEventListener('storage', event => {
             if (event.key === storageKey || event.key === collapsedKey || event.key === null) { loadState(); update(); }
         });
-        update();
+        window.addEventListener('focus', () => { showUpdated(); checkForUpdates(); });
+        document.addEventListener('visibilitychange', checkForUpdates);
+        setInterval(showUpdated, 60000);
+        setInterval(checkForUpdates, 30000);
+        loadState();
+        render();
+        checkForUpdates();
     </script>
 </body>
 </html>

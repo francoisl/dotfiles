@@ -130,6 +130,36 @@ class ReportTest(unittest.TestCase):
         self.assertEqual(output.read_text(encoding='utf-8'), 'second')
         self.assertEqual(output.stat().st_mode & 0o777, 0o600)
 
+    def test_latest_report_publishes_private_refresh_data_without_refreshing_the_archive(self):
+        self.queue(review=[metadata(1)])
+        verdict(self.directory, 1, report='</script><img src=x onerror="window.injected=true">')
+        output = self.directory / 'latest' / 'custom report.html'
+        args = ['render-report.py', str(self.directory), '--output', str(output), '--no-open']
+        with patch('sys.argv', args), patch('builtins.print'), patch.object(renderer.webbrowser, 'open') as open_browser:
+            self.assertEqual(renderer.main(), 0)
+            open_browser.assert_not_called()
+
+        def snapshot(path):
+            return json.loads(path.read_text(encoding='utf-8').split(
+                '<script id="snapshot" type="application/json">', 1)[1].split('</script>', 1)[0])
+
+        latest = snapshot(output)
+        archive = snapshot(self.directory / 'index.html')
+        self.assertEqual(latest['refreshFile'], 'custom report.refresh.js')
+        self.assertNotIn('refreshFile', archive)
+        refresh = output.with_suffix('.refresh.js')
+        script = refresh.read_text(encoding='utf-8')
+        self.assertTrue(script.startswith('window.reviewQueueRefresh('))
+        self.assertEqual(json.loads(script.removeprefix('window.reviewQueueRefresh(').removesuffix(');\n')), latest)
+        self.assertNotIn('<', script)
+        self.assertEqual(refresh.stat().st_mode & 0o777, 0o600)
+
+        verdict(self.directory, 1, status='READY_TO_MERGE', report='Updated review.')
+        with patch('sys.argv', args), patch('builtins.print'):
+            self.assertEqual(renderer.main(), 0)
+        self.assertIn('Updated review.', refresh.read_text(encoding='utf-8'))
+        self.assertEqual(snapshot(output)['prs'][0]['status'], 'READY_TO_MERGE')
+
     def test_fetcher_saves_metadata_without_changing_selection(self):
         output = self.directory / 'queue.json'
         raw = {

@@ -168,12 +168,16 @@ def build_snapshot(directory):
     }
 
 
-def render_html(snapshot):
-    template = Path(__file__).with_name('report.html').read_text(encoding='utf-8')
+def snapshot_json(snapshot):
     payload = json.dumps(snapshot, ensure_ascii=True)
     for character in '<>&':
         payload = payload.replace(character, f'\\u{ord(character):04x}')
-    return template.replace('__REVIEW_SNAPSHOT__', payload)
+    return payload
+
+
+def render_html(snapshot):
+    template = Path(__file__).with_name('report.html').read_text(encoding='utf-8')
+    return template.replace('__REVIEW_SNAPSHOT__', snapshot_json(snapshot))
 
 
 def write_html(output, html):
@@ -199,11 +203,13 @@ def main():
     output = args.output.expanduser().resolve()
     try:
         snapshot = build_snapshot(directory)
-        html = render_html(snapshot)
         if output == Path(__file__).with_name('report.html').resolve():
             raise ValueError('The output must not overwrite the report template.')
-        for path in dict.fromkeys([directory / 'index.html', output]):
-            write_html(path, html)
+        refresh = output.with_suffix('.refresh.js')
+        latest = dict(snapshot, refreshFile=refresh.name)
+        write_html(directory / 'index.html', render_html(snapshot))
+        write_html(output, render_html(latest))
+        write_html(refresh, f'window.reviewQueueRefresh({snapshot_json(latest)});\n')
     except (OSError, ValueError, TypeError, KeyError) as error:
         print(f'Review queue: {error}', file=sys.stderr)
         return 1
