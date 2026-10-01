@@ -162,13 +162,20 @@
     "clangd-lsp@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "crit@crit": true
+    "crit@crit": true,
+    "compound-engineering@compound-engineering-plugin": true
   },
   "extraKnownMarketplaces": {
     "crit": {
       "source": {
         "source": "github",
         "repo": "tomasz-tomczyk/crit"
+      }
+    },
+    "compound-engineering-plugin": {
+      "source": {
+        "source": "github",
+        "repo": "EveryInc/compound-engineering-plugin"
       }
     }
   },
