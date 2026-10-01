@@ -70,6 +70,7 @@
             border-radius: 12px;
             color: var(--surface);
             display: grid;
+            flex-shrink: 0;
             font-size: 18px;
             font-weight: 750;
             height: 42px;
@@ -94,6 +95,10 @@
             border: 1px solid var(--line);
             border-radius: 999px;
             padding: 5px 12px;
+        }
+        .updated strong {
+            color: var(--ink);
+            font-weight: 600;
         }
         .intro {
             margin: 32px 0 24px;
@@ -413,12 +418,10 @@
         }
         @media (max-width: 480px) {
             .topbar {
-                align-items: flex-start;
+                flex-wrap: wrap;
             }
             .identity {
-                align-items: flex-end;
-                flex-direction: column;
-                gap: 6px;
+                justify-content: flex-start;
             }
             .summary-card {
                 padding: 15px;
@@ -452,7 +455,7 @@
                 <div class="mark" aria-hidden="true">K2</div>
                 <div><div class="brand-title">Your daily desk</div><div class="small">A little less tab juggling.</div></div>
             </div>
-            <div class="identity"><span id="today"></span><span class="user" id="login"></span></div>
+            <div class="identity"><span class="updated" id="updated"></span><span class="user" id="login"></span></div>
         </header>
         <main>
             <div class="intro">
@@ -486,7 +489,6 @@
                     <div class="help">
                         <p><strong>One day at a time.</strong><br>Checks save in this browser and reset each day. Checking an item means today's work on it is done.</p>
                         <p><strong>Fresh GitHub data.</strong><br>Run <code>/k2-web</code> to refresh this snapshot. Use “refresh without opening” to reuse this tab, then reload it.</p>
-                        <p id="updated"></p>
                     </div>
                 </aside>
                 <div id="sections"></div>
@@ -522,6 +524,30 @@
             if (className) node.className = className;
             if (text !== undefined) node.textContent = text;
             return node;
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.trunc((Date.now() - date.getTime()) / 1000);
+            const format = new Intl.RelativeTimeFormat(undefined, {numeric: 'always'});
+            for (const [unit, size] of [['day', 86400], ['hour', 3600], ['minute', 60]]) {
+                if (seconds >= size) return format.format(-Math.trunc(seconds / size), unit);
+            }
+            return 'just now';
+        }
+
+        function showUpdated() {
+            const updated = document.getElementById('updated');
+            const date = new Date(snapshot.generatedAt);
+            if (Number.isNaN(date.getTime())) {
+                updated.textContent = 'Update time unknown';
+                return;
+            }
+            const time = element('time');
+            time.dateTime = date.toISOString();
+            time.append(element('strong', '', date.toLocaleString(undefined, {
+                year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+            })));
+            updated.replaceChildren('Updated ', time, ` · ${timeAgo(date)}`);
         }
 
         function storageNotice(message) {
@@ -560,7 +586,6 @@
             } catch {
                 storageNotice('Saved progress is unavailable. Checks work in this tab, but may not survive a reload. Use a regular browser window with local storage enabled.');
             }
-            document.getElementById('today').textContent = new Date().toLocaleDateString(undefined, {weekday: 'short', month: 'short', day: 'numeric'});
             const stale = document.getElementById('stale-notice');
             stale.hidden = localDay(new Date(snapshot.generatedAt)) === currentDay;
             stale.textContent = 'This GitHub snapshot is from an earlier day. Run /k2-web for fresh data. The checkboxes track today.';
@@ -680,7 +705,7 @@
         }
 
         document.getElementById('login').textContent = `@${snapshot.login}`;
-        document.getElementById('updated').textContent = `GitHub snapshot: ${new Date(snapshot.generatedAt).toLocaleString()}`;
+        showUpdated();
         if (snapshot.warnings.length) {
             const notice = document.getElementById('fetch-notice');
             notice.hidden = false;
@@ -697,14 +722,15 @@
                 render();
             }
         });
-        function checkDay() {
+        function refreshTime() {
+            showUpdated();
             if (localDay() !== currentDay) {
                 loadDay();
                 render();
             }
         }
-        window.addEventListener('focus', checkDay);
-        setInterval(checkDay, 60000);
+        window.addEventListener('focus', refreshTime);
+        setInterval(refreshTime, 60000);
         loadDay();
         render();
     </script>

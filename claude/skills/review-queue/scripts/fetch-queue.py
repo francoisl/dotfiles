@@ -21,6 +21,8 @@ import re
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from pathlib import Path
 
 OWNER = os.environ.get("RQ_OWNER", "Expensify")
 CLONE_ROOT = os.path.expanduser(os.environ.get("RQ_CLONE_ROOT", "~/Expensidev"))
@@ -118,9 +120,11 @@ def slim(pr, extra=None):
     out = {
         "repo": pr["_repo"],
         "number": pr["number"],
-        "title": pr["title"][:100],
+        "title": pr["title"],
         "author": (pr.get("author") or {}).get("login", "?"),
         "churn": pr["_churn"],
+        "additions": pr.get("additions", 0),
+        "deletions": pr.get("deletions", 0),
         "files": pr.get("changedFiles", 0),
         "ci": pr["_ci"],
         "url": pr["url"],
@@ -140,6 +144,8 @@ def main():
                     help="how many PRs to actually review this run")
     ap.add_argument("--repo", default=None,
                     help="only consider PRs in this repo (name, not owner/name)")
+    ap.add_argument("--output", type=Path, default=None,
+                    help="also save queue metadata for the browser report")
     args = ap.parse_args()
 
     who = gh(["api", "user", "--jq", ".login"])
@@ -184,15 +190,24 @@ def main():
     # Cheapest first: the whole point is draining quick wins out of the backlog.
     reviewable.sort(key=lambda p: (p["_churn"], p.get("changedFiles", 0)))
 
-    print(json.dumps({
+    queue = {
         "me": me,
         "owner": OWNER,
+        "captured_at": datetime.now(timezone.utc).isoformat(),
         "total_awaiting_review": len(urls),
         "review": [slim(p) for p in reviewable[:args.limit]],
         "deferred": [slim(p) for p in reviewable[args.limit:]],
         "skipped": skipped,
         "errors": errors,
-    }, indent=1))
+    }
+    payload = json.dumps(queue, indent=1)
+    if args.output:
+        output = args.output.expanduser()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with output.open("w", encoding="utf-8") as file:
+            os.chmod(output, 0o600)
+            file.write(payload + "\n")
+    print(payload)
 
 
 if __name__ == "__main__":

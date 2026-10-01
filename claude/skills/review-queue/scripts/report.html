@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Review queue · Your review desk</title>
+    <style>
+        :root {
+            --bg: #f5f5f0;
+            --surface: #ffffff;
+            --ink: #20312d;
+            --muted: #65716a;
+            --line: #e2e7de;
+            --accent: #216b52;
+            --soft: #e6f1e9;
+            --red: #a33c33;
+            --red-soft: #faeae7;
+            --amber: #805420;
+            --amber-soft: #fff1df;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+        a {
+            color: var(--accent);
+        }
+        input, select, button {
+            font: inherit;
+        }
+        [hidden] {
+            display: none !important;
+        }
+        :focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+        }
+        .shell {
+            margin: auto;
+            max-width: 1280px;
+            padding: 32px 40px 64px;
+        }
+        header {
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 16px;
+            justify-content: space-between;
+            padding-bottom: 28px;
+        }
+        .brand {
+            align-items: center;
+            display: flex;
+            gap: 12px;
+        }
+        .mark {
+            background: var(--ink);
+            border-radius: 12px;
+            color: var(--surface);
+            display: grid;
+            flex-shrink: 0;
+            font-size: 18px;
+            font-weight: 750;
+            height: 42px;
+            place-items: center;
+            width: 42px;
+        }
+        .small, .meta, footer {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .identity {
+            align-items: center;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            font-size: 13px;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .user {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 5px 12px;
+        }
+        .updated strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+        .intro {
+            margin: 32px 0 24px;
+        }
+        .eyebrow {
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: clamp(28px, 4vw, 38px);
+            letter-spacing: -0.035em;
+            line-height: 1.2;
+            margin: 6px 0;
+        }
+        .intro p {
+            color: var(--muted);
+            margin: 10px 0 0;
+        }
+        .summary {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            margin-bottom: 28px;
+        }
+        .metric {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+        .metric:first-child {
+            background: var(--soft);
+            border-color: transparent;
+        }
+        .value {
+            font-size: 28px;
+            font-weight: 650;
+            letter-spacing: -0.03em;
+        }
+        .workspace {
+            align-items: start;
+            display: grid;
+            gap: 32px;
+            grid-template-columns: 220px minmax(0, 1fr);
+        }
+        aside {
+            max-height: calc(100vh - 48px);
+            overflow: auto;
+            position: sticky;
+            top: 24px;
+        }
+        .field-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 650;
+            margin: 0 0 7px;
+        }
+        input[type='search'], select {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--ink);
+            margin-bottom: 16px;
+            padding: 9px 10px;
+            width: 100%;
+        }
+        .toggle {
+            align-items: center;
+            display: flex;
+            font-size: 12px;
+            gap: 8px;
+        }
+        input[type='checkbox'] {
+            accent-color: var(--accent);
+            cursor: pointer;
+            height: 18px;
+            width: 18px;
+        }
+        .nav-heading {
+            border-top: 1px solid var(--line);
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 20px;
+            padding-top: 16px;
+        }
+        nav a {
+            border-radius: 8px;
+            color: var(--ink);
+            display: block;
+            font-size: 12px;
+            margin-top: 3px;
+            padding: 8px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background: var(--soft);
+        }
+        nav .small {
+            display: block;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            margin-bottom: 18px;
+            padding: 22px;
+            scroll-margin-top: 24px;
+        }
+        .card.handled {
+            border-color: var(--accent);
+        }
+        .card-top, .card-actions, .meta {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-top {
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .card-controls, .bulk-actions {
+            align-items: center;
+            display: flex;
+            gap: 8px;
+        }
+        .collapse-toggle, .bulk-actions button {
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 650;
+            padding: 3px 10px;
+        }
+        .collapse-toggle:hover, .bulk-actions button:hover {
+            background: var(--soft);
+            color: var(--accent);
+        }
+        .collapse-toggle::before {
+            border: solid currentColor;
+            border-width: 0 1.5px 1.5px 0;
+            content: '';
+            display: inline-block;
+            height: 5px;
+            margin: 0 7px 3px 1px;
+            transform: rotate(45deg);
+            width: 5px;
+        }
+        .card.collapsed .collapse-toggle::before {
+            margin-bottom: 1px;
+            transform: rotate(-45deg);
+        }
+        .card.collapsed .card-actions {
+            margin-top: 12px;
+        }
+        .list-tools {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .list-tools p {
+            margin: 0;
+        }
+        .visually-hidden {
+            clip-path: inset(50%);
+            height: 1px;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            width: 1px;
+        }
+        .pr-number {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .badge {
+            background: var(--soft);
+            border-radius: 999px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 650;
+            padding: 4px 10px;
+        }
+        .badge.NEEDS_CHANGES, .badge.ERROR {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+        .badge.MINOR_NITS, .badge.NEEDS_HUMAN {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+        .badge.SKIPPED, .badge.DEFERRED {
+            background: var(--bg);
+            color: var(--muted);
+        }
+        h2 {
+            font-size: 19px;
+            letter-spacing: -0.02em;
+            line-height: 1.4;
+            margin: 0 0 10px;
+            overflow-wrap: anywhere;
+        }
+        h2 a {
+            color: var(--ink);
+            text-decoration: none;
+        }
+        h2 a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        .summary-text {
+            font-size: 14px;
+            margin: 16px 0;
+            overflow-wrap: anywhere;
+        }
+        .findings {
+            border-left: 3px solid var(--line);
+            font-size: 13px;
+            margin: 16px 0;
+            padding: 0 0 0 28px;
+        }
+        .findings li {
+            margin: 9px 0;
+            overflow-wrap: anywhere;
+        }
+        .card-actions {
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 14px;
+        }
+        details {
+            border-top: 1px solid var(--line);
+            margin-top: 16px;
+            padding-top: 14px;
+        }
+        details > summary {
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 650;
+        }
+        .report {
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+        .report h1, .report h2, .report h3, .report h4, .report h5, .report h6 {
+            font-size: 16px;
+            letter-spacing: 0;
+            margin: 20px 0 10px;
+        }
+        pre {
+            background: var(--bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-size: 12px;
+            overflow: auto;
+            padding: 14px;
+            white-space: pre-wrap;
+        }
+        code {
+            background: var(--bg);
+            border-radius: 3px;
+            font-size: 0.9em;
+            padding: 1px 4px;
+        }
+        pre code {
+            padding: 0;
+        }
+        blockquote {
+            border-left: 3px solid var(--line);
+            color: var(--muted);
+            margin-left: 0;
+            padding-left: 14px;
+        }
+        .notice, .empty {
+            background: var(--amber-soft);
+            border-radius: 10px;
+            color: var(--amber);
+            font-size: 13px;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+        }
+        footer {
+            border-top: 1px solid var(--line);
+            margin-top: 28px;
+            padding-top: 16px;
+        }
+        @media (max-width: 850px) {
+            .shell {
+                padding: 24px 20px 40px;
+            }
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .workspace {
+                gap: 20px;
+                grid-template-columns: 1fr;
+            }
+            aside {
+                max-height: none;
+                position: static;
+            }
+            nav, .nav-heading {
+                display: none;
+            }
+        }
+        @media (max-width: 480px) {
+            header {
+                flex-wrap: wrap;
+            }
+            .identity {
+                justify-content: flex-start;
+            }
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #17211e;
+                --surface: #1e2b26;
+                --ink: #e3eee6;
+                --muted: #a6b4ac;
+                --line: #35453d;
+                --accent: #81cba6;
+                --soft: #253e32;
+                --red: #f3aaa2;
+                --red-soft: #432e2c;
+                --amber: #eac28e;
+                --amber-soft: #403326;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <header>
+            <div class="brand"><div class="mark" aria-hidden="true">RQ</div><div><strong>Your review desk</strong><div class="small">One PR. One clear decision.</div></div></div>
+            <div class="identity"><span class="updated" id="updated" hidden></span><span class="user" id="batch"></span></div>
+        </header>
+        <main>
+            <div class="intro"><div class="eyebrow">Read / Decide / Follow through</div><h1>Your reviews, in one place.</h1><p id="run-summary"></p></div>
+            <div class="notice">These are saved review results, not live GitHub status. “Ready to merge” means the review found no blockers.</div>
+            <div class="notice" id="storage-notice" role="status" hidden></div>
+            <div class="summary">
+                <div class="metric"><div class="small">Handled</div><div class="value" id="handled-count">0</div><div class="small" id="handled-total"></div></div>
+                <div class="metric"><div class="small">Ready to merge</div><div class="value" id="ready-count">0</div><div class="small">no blocking findings</div></div>
+                <div class="metric"><div class="small">Needs changes</div><div class="value" id="changes-count">0</div><div class="small">blocking findings</div></div>
+                <div class="metric"><div class="small">Needs your judgement</div><div class="value" id="human-count">0</div><div class="small">uncertain or failed reviews</div></div>
+            </div>
+            <div class="workspace">
+                <aside aria-label="Review filters">
+                    <label class="field-label" for="search">Find a PR or finding</label><input id="search" type="search" placeholder="Title, repository, author…">
+                    <label class="field-label" for="status">Verdict</label><select id="status"><option value="all">All PRs</option><option value="reviewed">Reviewed this run</option></select>
+                    <label class="toggle"><input id="hide-handled" type="checkbox">Hide handled</label>
+                    <div class="nav-heading">Jump to a PR</div><nav id="navigation" aria-label="Pull requests"></nav>
+                </aside>
+                <div><div class="list-tools"><p class="small" id="visible-count" aria-live="polite"></p><div class="bulk-actions"><button id="expand-all" type="button">Expand all</button><button id="collapse-all" type="button">Collapse all</button></div></div><div id="cards"></div><p class="empty" id="empty" hidden>No PRs match your filters.</p></div>
+            </div>
+        </main>
+        <footer id="footer"></footer>
+        <noscript><p class="notice">Enable JavaScript to display the reviews and save handled checkboxes.</p></noscript>
+    </div>
+    <script id="snapshot" type="application/json">__REVIEW_SNAPSHOT__</script>
+    <script>
+        'use strict';
+        const snapshot = JSON.parse(document.getElementById('snapshot').textContent);
+        const labels = {
+            READY_TO_MERGE: 'Ready to merge', MINOR_NITS: 'Minor nits only', NEEDS_CHANGES: 'Needs changes',
+            NEEDS_HUMAN: 'Needs your judgement', SKIPPED: 'Skipped', DEFERRED: 'Not reviewed this run', ERROR: 'Metadata fetch failed',
+        };
+        const reviewed = new Set(['READY_TO_MERGE', 'MINOR_NITS', 'NEEDS_CHANGES', 'NEEDS_HUMAN']);
+        const storageKey = `review-queue:v1:${snapshot.batchId}`;
+        const collapsedKey = `${storageKey}:collapsed`;
+        const search = document.getElementById('search');
+        const status = document.getElementById('status');
+        const hideHandled = document.getElementById('hide-handled');
+        const cards = new Map();
+        let handled = {};
+        let collapsed = {};
+
+        function element(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+        function link(text, url) {
+            const node = element('a', '', text);
+            node.href = url;
+            node.target = '_blank';
+            node.rel = 'noopener noreferrer';
+            return node;
+        }
+        function timeAgo(date) {
+            const seconds = Math.trunc((Date.now() - date.getTime()) / 1000);
+            const format = new Intl.RelativeTimeFormat(undefined, {numeric: 'always'});
+            for (const [unit, size] of [['day', 86400], ['hour', 3600], ['minute', 60]]) {
+                if (seconds >= size) return format.format(-Math.trunc(seconds / size), unit);
+            }
+            return 'just now';
+        }
+        function showUpdated() {
+            const times = [snapshot.queueCapturedAt, ...snapshot.prs.map(pr => pr.reviewedAt)].map(Date.parse).filter(Number.isFinite);
+            const updated = document.getElementById('updated');
+            updated.hidden = !times.length;
+            if (!times.length) return;
+            const date = new Date(Math.max(...times));
+            const time = element('time');
+            time.dateTime = date.toISOString();
+            time.append(element('strong', '', date.toLocaleString(undefined, {
+                year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+            })));
+            updated.replaceChildren('Updated ', time, ` · ${timeAgo(date)}`);
+        }
+        function storageNotice() {
+            const notice = document.getElementById('storage-notice');
+            notice.textContent = 'Your browser could not load or save progress. Checkboxes and collapsed cards work in this tab, but may not survive a reload.';
+            notice.hidden = false;
+        }
+        function loadFlags(key) {
+            try {
+                const saved = JSON.parse(localStorage.getItem(key) || '{}');
+                if (!saved || typeof saved !== 'object' || Array.isArray(saved)) throw new Error('Invalid progress');
+                return Object.fromEntries(Object.entries(saved).filter(([, value]) => value === true));
+            } catch {
+                storageNotice();
+                return {};
+            }
+        }
+        function saveFlags(key, flags) {
+            try { localStorage.setItem(key, JSON.stringify(flags)); } catch { storageNotice(); }
+        }
+        function loadState() {
+            handled = loadFlags(storageKey);
+            collapsed = loadFlags(collapsedKey);
+        }
+        function setCollapsed(ids, value) {
+            for (const id of ids) {
+                if (value) collapsed[id] = true;
+                else delete collapsed[id];
+            }
+            saveFlags(collapsedKey, collapsed);
+            update();
+        }
+        function inline(text, parent) {
+            const pattern = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^\s)]+\))/g;
+            let end = 0;
+            for (const match of text.matchAll(pattern)) {
+                parent.append(document.createTextNode(text.slice(end, match.index)));
+                const token = match[0];
+                if (token.startsWith('`')) parent.append(element('code', '', token.slice(1, -1)));
+                else if (token.startsWith('**')) parent.append(element('strong', '', token.slice(2, -2)));
+                else {
+                    const parts = token.match(/^\[(.*?)\]\((.*?)\)$/);
+                    try {
+                        const url = new URL(parts[2]);
+                        parent.append(url.protocol === 'https:' || url.protocol === 'http:' ? link(parts[1], url.href) : document.createTextNode(token));
+                    } catch {
+                        parent.append(document.createTextNode(token));
+                    }
+                }
+                end = match.index + token.length;
+            }
+            parent.append(document.createTextNode(text.slice(end)));
+        }
+        function markdown(text) {
+            const fragment = document.createDocumentFragment();
+            const trimmed = text.trim();
+            if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(trimmed);
+                    fragment.append(element('pre', '', JSON.stringify(parsed, null, 2)));
+                    return fragment;
+                } catch {}
+            }
+            let code = null;
+            let codeLines = [];
+            let paragraph = null;
+            let list = null;
+            for (const line of text.split('\n')) {
+                if (/^\s*(```|~~~)/.test(line)) {
+                    paragraph = list = null;
+                    if (code) {
+                        code.textContent = codeLines.join('\n');
+                        code = null;
+                    } else {
+                        const pre = element('pre');
+                        code = element('code');
+                        codeLines = [];
+                        pre.append(code);
+                        fragment.append(pre);
+                    }
+                    continue;
+                }
+                if (code) { codeLines.push(line); continue; }
+                if (!line.trim()) { paragraph = list = null; continue; }
+                const heading = line.match(/^(#{1,6})\s+(.*)$/);
+                const bullet = line.match(/^\s*(?:([-*+])|\d+\.)\s+(.*)$/);
+                if (heading) {
+                    paragraph = list = null;
+                    const node = element(`h${heading[1].length}`);
+                    inline(heading[2], node);
+                    fragment.append(node);
+                } else if (bullet) {
+                    paragraph = null;
+                    const tag = bullet[1] ? 'UL' : 'OL';
+                    if (!list || list.tagName !== tag) {
+                        list = element(tag.toLowerCase());
+                        fragment.append(list);
+                    }
+                    const node = element('li');
+                    inline(bullet[2], node);
+                    list.append(node);
+                } else if (line.startsWith('> ')) {
+                    paragraph = list = null;
+                    const node = element('blockquote');
+                    inline(line.slice(2), node);
+                    fragment.append(node);
+                } else {
+                    list = null;
+                    if (!paragraph) { paragraph = element('p'); fragment.append(paragraph); }
+                    else paragraph.append(document.createTextNode(' '));
+                    inline(line, paragraph);
+                }
+            }
+            if (code) code.textContent = codeLines.join('\n');
+            return fragment;
+        }
+        function findingNode(pr, text) {
+            const node = element('li');
+            const match = text.match(/^([^\s:]+):(\d+)\s*[-–—:]\s*(.*)$/);
+            if (pr.head && match && !match[1].startsWith('/') && !match[1].split('/').includes('..')) {
+                const base = new URL(pr.url).pathname.split('/').slice(0, 3).join('/');
+                const path = match[1].split('/').map(encodeURIComponent).join('/');
+                node.append(link(`${match[1]}:${match[2]}`, `https://github.com${base}/blob/${pr.head}/${path}#L${match[2]}`));
+                node.append(document.createTextNode(` — ${match[3]}`));
+            } else inline(text, node);
+            return node;
+        }
+        function card(pr, index) {
+            const node = element('article', 'card');
+            node.id = `pr-${index}`;
+            const top = element('div', 'card-top');
+            const body = element('div', 'card-body');
+            body.id = `${node.id}-body`;
+            const toggle = element('button', 'collapse-toggle');
+            toggle.type = 'button';
+            toggle.setAttribute('aria-controls', body.id);
+            const toggleText = element('span');
+            toggle.append(toggleText, element('span', 'visually-hidden', ` ${pr.repo} PR ${pr.number}`));
+            toggle.addEventListener('click', () => setCollapsed([pr.id], !collapsed[pr.id]));
+            const controls = element('div', 'card-controls');
+            controls.append(element('span', `badge ${pr.status}`, labels[pr.status]), toggle);
+            top.append(element('span', 'pr-number', `${pr.repo} · PR ${pr.number}`), controls);
+            const title = element('h2');
+            title.append(link(pr.title, pr.url));
+            const meta = element('div', 'meta');
+            if (pr.author) meta.append(element('span', '', `by ${pr.author}`));
+            if (pr.additions != null && pr.deletions != null) meta.append(element('span', '', `+${pr.additions} / −${pr.deletions} lines`));
+            else if (pr.churn != null) meta.append(element('span', '', `${pr.churn} changed lines`));
+            if (pr.files != null) meta.append(element('span', '', `${pr.files} files`));
+            if (pr.ci) meta.append(element('span', '', `CI at queue capture: ${pr.ci.toLowerCase()}`));
+            if (pr.corrected) meta.append(element('span', '', 'Corrected review'));
+            if (pr.reviewedAt) meta.append(element('span', '', `Result saved: ${new Date(pr.reviewedAt).toLocaleString()}`));
+            node.append(top, title, meta, body);
+            body.append(element('p', 'summary-text', pr.summary));
+            if (pr.findings.length) {
+                const list = element('ul', 'findings');
+                list.append(...pr.findings.map(text => findingNode(pr, text)));
+                body.append(list);
+            }
+            if (pr.report) {
+                const details = element('details');
+                details.append(element('summary', '', 'Read the full review'));
+                const report = element('div', 'report');
+                details.addEventListener('toggle', () => {
+                    if (details.open && !report.hasChildNodes()) report.append(markdown(pr.report));
+                });
+                details.append(report);
+                body.append(details);
+            } else if (reviewed.has(pr.status)) body.append(element('p', 'small', 'No full report was saved for this PR.'));
+            const actions = element('div', 'card-actions');
+            const checkbox = element('input');
+            checkbox.type = 'checkbox';
+            checkbox.dataset.reviewId = pr.id;
+            const label = element('label', 'toggle');
+            label.append(checkbox, document.createTextNode('Handled'));
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) handled[pr.id] = true;
+                else delete handled[pr.id];
+                saveFlags(storageKey, handled);
+                update();
+                if (node.hidden) hideHandled.focus({preventScroll: true});
+            });
+            const links = element('div', 'meta');
+            links.append(link('Open PR ↗', pr.url));
+            if (pr.reportUrl) links.append(link('Original report ↗', pr.reportUrl));
+            actions.append(label, links);
+            node.append(actions);
+            const navigation = element('a', '', `${pr.repo} · PR ${pr.number}`);
+            navigation.href = `#${node.id}`;
+            navigation.append(element('span', 'small', labels[pr.status]));
+            navigation.addEventListener('click', () => { if (collapsed[pr.id]) setCollapsed([pr.id], false); });
+            document.getElementById('navigation').append(navigation);
+            cards.set(pr.id, {node, body, toggle, toggleText, checkbox, navigation});
+            return node;
+        }
+        function update() {
+            const query = search.value.trim().toLowerCase();
+            let visible = 0;
+            let count = 0;
+            for (const pr of snapshot.prs) {
+                const {node, body, toggle, toggleText, checkbox, navigation} = cards.get(pr.id);
+                const done = Boolean(handled[pr.id]);
+                count += Number(done);
+                checkbox.checked = done;
+                node.classList.toggle('handled', done);
+                const folded = Boolean(collapsed[pr.id]);
+                node.classList.toggle('collapsed', folded);
+                body.hidden = folded;
+                toggle.setAttribute('aria-expanded', String(!folded));
+                toggleText.textContent = folded ? 'Expand' : 'Collapse';
+                const matchesStatus = status.value === 'all' || status.value === pr.status || (status.value === 'reviewed' && reviewed.has(pr.status));
+                const text = [pr.title, pr.repo, pr.number, pr.author, pr.summary, ...pr.findings].join(' ').toLowerCase();
+                node.hidden = !matchesStatus || (hideHandled.checked && done) || !text.includes(query);
+                navigation.hidden = node.hidden;
+                if (!node.hidden) visible++;
+            }
+            document.getElementById('handled-count').textContent = count;
+            document.getElementById('visible-count').textContent = `${visible} of ${snapshot.prs.length} PRs shown`;
+            document.getElementById('empty').hidden = visible !== 0;
+        }
+        for (const [value, label] of Object.entries(labels)) {
+            const option = element('option', '', label);
+            option.value = value;
+            status.append(option);
+        }
+        const countStatus = value => snapshot.prs.filter(pr => pr.status === value).length;
+        document.getElementById('ready-count').textContent = countStatus('READY_TO_MERGE');
+        document.getElementById('changes-count').textContent = countStatus('NEEDS_CHANGES');
+        document.getElementById('human-count').textContent = countStatus('NEEDS_HUMAN') + countStatus('ERROR');
+        document.getElementById('handled-total').textContent = `of ${snapshot.prs.length} PRs in this batch`;
+        document.getElementById('batch').textContent = snapshot.login ? `@${snapshot.login}` : snapshot.owner;
+        showUpdated();
+        window.addEventListener('focus', showUpdated);
+        setInterval(showUpdated, 60000);
+        const reviewCount = snapshot.prs.filter(pr => reviewed.has(pr.status)).length;
+        document.getElementById('run-summary').textContent = `${reviewCount} review results · ${countStatus('SKIPPED')} skipped · ${countStatus('DEFERRED')} deferred · ${countStatus('ERROR')} metadata errors`;
+        const captured = snapshot.queueCapturedAt ? `Queue captured ${new Date(snapshot.queueCapturedAt).toLocaleString()}. ` : 'Historical batch; queue metadata is unavailable. ';
+        document.getElementById('footer').textContent = `${captured}Batch: ${snapshot.batchName}. Handled checks and collapsed cards save locally for this batch and don't change GitHub. Changed review results start unchecked and expanded.`;
+        loadState();
+        document.getElementById('cards').append(...snapshot.prs.map(card));
+        search.addEventListener('input', update);
+        status.addEventListener('change', update);
+        hideHandled.addEventListener('change', update);
+        document.getElementById('expand-all').addEventListener('click', () => setCollapsed(cards.keys(), false));
+        document.getElementById('collapse-all').addEventListener('click', () => setCollapsed(cards.keys(), true));
+        window.addEventListener('storage', event => {
+            if (event.key === storageKey || event.key === collapsedKey || event.key === null) { loadState(); update(); }
+        });
+        update();
+    </script>
+</body>
+</html>

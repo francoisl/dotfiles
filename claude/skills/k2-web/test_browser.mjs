@@ -41,7 +41,7 @@ let browser;
 try {
     writeSnapshot(snapshot);
     browser = await chromium.launch({channel: 'chrome', headless: true});
-    const context = await browser.newContext({timezoneId: 'UTC', viewport: {width: 1280, height: 960}});
+    const context = await browser.newContext({locale: 'en-US', timezoneId: 'UTC', viewport: {width: 1280, height: 960}});
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -52,6 +52,11 @@ try {
     assert.equal(await page.locator('#reviews .task-title').textContent(), title);
     assert.equal(await page.locator('.task img').count(), 0);
     assert.equal(await page.evaluate(() => window.injected), undefined);
+    assert.equal(await page.locator('#updated').textContent(), 'Updated Sep 30, 2026, 12:00 PM UTC · just now');
+    assert.equal(await page.locator('#updated time').getAttribute('datetime'), '2026-09-30T12:00:00.000Z');
+    await page.clock.runFor(2 * 60 * 60 * 1000);
+    assert.equal(await page.locator('#updated').textContent(), 'Updated Sep 30, 2026, 12:00 PM UTC · 2 hours ago', 'The snapshot age must refresh while the tab stays open');
+    await page.clock.setSystemTime(new Date(generatedAt));
 
     await reviewCheckbox().check();
     assert.equal(await page.locator('#completed-count').textContent(), '1');
@@ -84,6 +89,7 @@ try {
     assert.equal(await page.locator('#completed-count').textContent(), '0', 'A new local date must start a new checklist');
     assert.equal(await page.locator('.task').count(), 2);
     assert.equal(await page.locator('#stale-notice').isVisible(), true);
+    assert.match(await page.locator('#updated').textContent(), /· 1 day ago$/);
 
     await page.clock.setSystemTime(new Date(generatedAt));
     await page.reload();
@@ -108,7 +114,7 @@ try {
     await page.setViewportSize({width: 390, height: 844});
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
     assert.deepEqual(errors, []);
-    console.log('Browser checks passed: safe rendering, file persistence, filtering, regeneration, daily reset, and storage errors.');
+    console.log('Browser checks passed: safe rendering, update time, file persistence, filtering, regeneration, daily reset, and storage errors.');
 } finally {
     if (browser) await browser.close();
     await rm(directory, {recursive: true, force: true});

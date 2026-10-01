@@ -1,13 +1,14 @@
 ---
 name: review-queue
-description: Drain your GitHub code-review backlog. Finds the PRs waiting on your review across Expensify repos, skips the ones that aren't your turn (drafts, [HOLD], red CI, conflicts), runs a real /code-review on the cheapest ones in isolated git worktrees in parallel, and reports one verdict per PR so you can see at a glance which are ready to merge. Read-only. Use when the user wants to triage, clear, or drain their PR review queue or review backlog. Pair with `/loop` for periodic sweeps.
+description: Drain your GitHub code-review backlog and open a browser summary grouped by PR. Finds PRs waiting on your review, skips those that aren't your turn, runs /code-review on the cheapest ones in isolated worktrees in parallel, and shows verdicts, findings, full reports, and saved handled checkboxes. Read-only. Use when asked to review, triage, clear, or drain a PR review queue. Pair with /loop for periodic sweeps.
 ---
 
 # Review Queue
 
 Turn the user's "PRs waiting on me" list into a ranked set of verdicts, so the
 small, clean PRs can be approved and merged immediately instead of sitting in the
-backlog.
+backlog. Open the results in a browser, with one card per PR and an expandable
+full review. Handled checkboxes track which results the user has acted on.
 
 **Read-only.** Never post a review, comment, approval, or label. Never push. The
 skill reports; the user acts.
@@ -23,6 +24,11 @@ All optional; the skill works with no arguments.
   which is what triage wants. Pass it as the second argument to `run-batch.sh`.
 - **A repo name** (`/review-queue Integration-Server`) — restrict to one repo via
   `--repo`.
+- **Browser output is the default.** “Terminal only” or “without opening” passes
+  `--no-open` to the browser renderer. Under `/loop`, open the first report only;
+  generate later reports without new tabs.
+- **“Open the last report”** — open `~/.local/share/review-queue/index.html`
+  without fetching GitHub or starting new reviews. Say it contains saved results.
 - **PR URLs** — skip Step 1 entirely and pass those PRs straight to Step 2,
   ignoring the skip rules. Derive the repo from the URL path. For a bare PR
   number with no repo, resolve it against the queue from Step 1; if it isn't
@@ -30,8 +36,12 @@ All optional; the skill works with no arguments.
 
 ## Step 1 — Build the queue
 
+Choose a unique `<out-dir>` under the shell tool's approved temporary directory.
+Check that parent with `ls` before generating files. Use this same directory in
+every step so the queue metadata and reviews stay together.
+
 ```bash
-python3 <skill-dir>/scripts/fetch-queue.py --limit <N> [--repo <name>]
+python3 <skill-dir>/scripts/fetch-queue.py --limit <N> [--repo <name>] --output <out-dir>/queue.json
 ```
 
 Prints JSON with four buckets:
@@ -60,22 +70,25 @@ Two things worth knowing about the output:
   a 120-line refactor of initialisation order. Use churn to pick what to spend
   reviews on; use the verdict, never the size, to decide what's mergeable.
 
-If `review` is empty, say so, show the skip reasons, and stop.
+If `review` is empty, skip Step 2 and go to Step 3. The browser report still
+shows skipped, deferred, and failed metadata lookups.
 
 ## Step 2 — Run the reviews in parallel
 
 Pass every selected PR to the batch driver as `<repo> <number>` pairs:
 
 ```bash
-<skill-dir>/scripts/run-batch.sh /tmp/review-queue-$(date +%Y%m%d-%H%M%S) medium \
+<skill-dir>/scripts/run-batch.sh <out-dir> medium \
   Integration-Server 9254 \
   Web-Expensify 55605 \
   IS-Templates 5924
 ```
 
-**Run this in the background** (`run_in_background: true`). A single PR takes
+**Run this in the background if the shell tool supports it.** A single PR takes
 roughly 4 minutes and can take much longer on a big repo, so any real batch will
-blow past a foreground timeout. It runs 3 reviews concurrently (`RQ_JOBS` to
+blow past a short foreground timeout. With a foreground-only tool, pass an
+explicit 24-hour tool timeout (`86400000` milliseconds) and wait for completion.
+It runs 3 reviews concurrently (`RQ_JOBS` to
 change that) and prints every verdict at the end.
 
 Each PR's review is self-contained: it fetches the PR head into a per-PR ref,
@@ -90,45 +103,51 @@ uncommitted work. Reviewing in place would feed the review that WIP as
 user's working tree untouched.
 
 While the batch runs, do not poll in a tight loop. Wait for the background task
-to report completion.
+to report completion, or for the foreground command to finish. The batch writes
+the browser report automatically without opening a tab; Step 3 opens it.
 
 ## Step 3 — Report
 
-Read only the verdict files — they are a few lines each:
+Run the renderer to open the per-PR browser summary:
 
 ```bash
-cat <out-dir>/*.verdict
+python3 <skill-dir>/scripts/render-report.py <out-dir>
 ```
 
-**Do not read the full `.md` reports into context** unless the user asks about a
-specific PR. That's the whole point of the verdict files; a full report can run
-to 16KB. File paths in both the verdicts and the reports are repo-relative, so
-they're still meaningful after the worktree is gone.
+Use `--no-open` for terminal-only requests, refreshes in an existing tab, or
+later `/loop` iterations. The stable latest report is
+`~/.local/share/review-queue/index.html`, and each batch keeps `<out-dir>/index.html`.
+Relay the file link printed by the renderer so the user can bookmark it.
 
-Group by verdict, most-actionable first:
+The renderer reads verdicts and full `.md` reports directly from disk.
+**Do not read full reports into model context** unless the user asks about a
+specific PR. Read the small verdict files only when needed for a terminal summary.
 
-1. **✅ Ready to merge** (`READY_TO_MERGE`) — the payoff. These are the ones the
-   user can approve and merge now.
-2. **🟡 Minor nits only** (`MINOR_NITS`) — mergeable; mention the nits so the
-   user can decide whether to bother.
-3. **🔴 Needs changes** (`NEEDS_CHANGES`) — real bugs found. Lead with the
-   blocking finding.
-4. **🤔 Needs your judgement** (`NEEDS_HUMAN`) — includes PRs whose review
-   failed outright; say which, and why.
+The page groups each PR's title, author, diff size, verdict, one-line summary,
+top findings, and expandable full review in one card. It also includes:
 
-For each PR show:
+- Verdict and search filters, a sidebar linking to each PR, and a hide-handled filter.
+- Handled checkboxes saved in browser storage for this batch. They don't post a
+  GitHub review. A changed verdict or full report starts unchecked.
+- A collapse toggle on each card, plus Expand all and Collapse all. A collapsed
+  card keeps its verdict, title, author, diff size, and Handled checkbox visible. Collapsed state
+  saves per batch; a changed review starts expanded, and the sidebar expands the
+  card it jumps to.
+- Skipped, deferred, and metadata-error cards with their reasons.
+- Saved review timestamps and queue-capture timestamps, clearly distinct from
+  live GitHub status. Missing or invalid verdicts become `NEEDS_HUMAN`.
+- An “Updated” time in the header: the newest queue-capture or review-saved time,
+  in local time, with how long ago that was. Re-rendering doesn't change it.
+- File links to the original full reports. Where a verdict records the reviewed
+  commit, finding locations link to that exact commit on GitHub.
+- Corrected results: `<repo>-<N>.corrected.verdict` takes precedence over the
+  original verdict for the same PR, with a visible “Corrected review” marker.
 
-- `[<repo>#<number> — title](url)` as a link
-- author, churn (`+/-` lines), file count
-- the `ONE_LINER`
-- the `TOP` findings, one per line, for anything not `READY_TO_MERGE`
-- the path to the full report
+**Keep the terminal response short:** the browser link, the counts below, and
+any review failures or blocking findings that need immediate attention. Put the
+full PR-by-PR breakdown in the browser unless the user asks for terminal details.
 
-Then a **⏭️ Skipped** section (one line each: PR link + reason), and a
-**📋 Not reviewed this run** section listing `deferred` PRs with their sizes, so
-the cap is never silent.
-
-End with a one-line summary:
+End with a one-line summary, including metadata errors when present:
 
 ```
 <T> awaiting review · <R> reviewed · <A> ready to merge · <N> need changes · <S> skipped · <D> deferred
@@ -146,6 +165,12 @@ End with a one-line summary:
 - **Cost.** Each PR costs two headless `claude` sessions (a full review plus a
   cheap classifier). Reviewing 6 PRs is a real spend; don't quietly raise the
   limit, and don't re-review PRs already covered earlier in the conversation.
+- **Saved results only.** Rendering or reopening a batch does not fetch GitHub
+  or run another review. For explicit PR URLs, `targets.txt` and verdicts are
+  sufficient; absent queue metadata, cards use repository/PR identifiers.
+- **Local output.** Generated HTML and `queue.json` contain private review data.
+  Keep them outside the public dotfiles repo. The checked-in `report.html` is
+  only a template. The renderer needs Python 3.9+ and uses no external assets.
 - **Loop-friendly.** Under `/loop`, report and stop; the next iteration re-fetches
   fresh state. Nothing is cached between runs.
 - **Nothing is left behind.** Each review removes its worktree and its
@@ -156,3 +181,20 @@ End with a one-line summary:
   `~/Expensidev`), `RQ_JOBS` (concurrent reviews, default 3), `RQ_TIMEOUT`
   (per-review seconds, default 1200), `RQ_CLASSIFY_MODEL` (default `haiku`),
   `RQ_CI_IGNORE` (regex of review-gate check names to not count as CI failure).
+
+## Verification
+
+Run the report regression tests with Python's standard library:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 <skill-dir>/scripts/test-report.py
+```
+
+The browser test needs an installed Playwright module and an existing temporary parent:
+
+```bash
+node <skill-dir>/scripts/test-report-browser.mjs /path/to/playwright/index.mjs /existing/temp/directory
+```
+
+It checks the update time, per-PR grouping, safe full-review rendering, commit links, filtering,
+collapsing, saved checkboxes and collapsed cards, and resetting both when a review changes.

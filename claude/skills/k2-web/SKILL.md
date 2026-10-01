@@ -46,6 +46,7 @@ a custom file. Keep using the same path and browser to retain checkbox state.
 - Checked items remain in today's list when they disappear from a refreshed GitHub snapshot.
 - Search and “hide completed” make the remaining work easier to find.
 - GitHub data updates only when this script runs. Reopening or reloading the HTML doesn't fetch GitHub.
+  The header shows when the script last fetched GitHub, in local time, and how long ago that was.
 - Partial fetch failures appear in the dashboard. Total failure preserves the previous HTML file.
 - The page needs no server, CDN, network connection, or runtime dependencies. Generation needs Python 3.9+ and `gh`.
 
@@ -64,7 +65,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 ~/.claude/skills/k2-web/test_dashboard.py
 ```
 
 `test_browser.mjs` checks real browser persistence, regeneration, filtering, daily reset,
-and safe rendering. Pass the path to an installed Playwright module and an existing
+the update time, and safe rendering. Pass the path to an installed Playwright module and an existing
 temporary parent directory:
 
 ```bash

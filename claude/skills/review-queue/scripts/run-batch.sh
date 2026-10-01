@@ -4,8 +4,8 @@
 # Usage: run-batch.sh <out-dir> <level> <repo> <number> [<repo> <number> ...]
 #
 # Writes one .md / .err / .verdict trio per PR into <out-dir>, plus a
-# targets.txt record of what was asked for. Prints a short progress line per PR
-# as it finishes. Exits 0 unless the arguments were malformed.
+# targets.txt record of what was asked for and a browser summary. Prints a short
+# progress line per PR as it finishes. Exits 0 unless the arguments were malformed.
 
 set -uo pipefail
 
@@ -39,3 +39,7 @@ xargs -P "$JOBS" -L 1 \
 
 echo "--- verdicts ---"
 cat "$OUT_DIR"/*.verdict 2>/dev/null || echo "(no verdicts written)"
+
+if ! python3 "$HERE/render-report.py" "$OUT_DIR" --no-open; then
+    printf '%s\n' "Browser report generation failed; the verdicts and full reviews are still in $OUT_DIR." >&2
+fi

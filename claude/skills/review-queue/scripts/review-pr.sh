@@ -55,6 +55,7 @@ TOTAL: 0
 ONE_LINER: $1
 TOP: none
 REPORT: $OUT
+HEAD: ${SHA:-}
 EOF
     exit 0
 }
@@ -158,6 +159,7 @@ fi
     echo "PR: ${REPO_NAME}#${PR}"
     printf '%s\n' "$body"
     echo "REPORT: $OUT"
+    echo "HEAD: $SHA"
 } >"$VERDICT"
 
 exit 0
