@@ -94,13 +94,6 @@ case "$REVIEW_SKILL" in
     code-review)
         REVIEW_PROMPT="/code-review $LEVEL $PR"
         ;;
-    ce-code-review|compound-engineering:ce-code-review)
-        REVIEW_ARGS="mode:agent"
-        if [ "$LEVEL" = "high" ] || [ "$LEVEL" = "max" ]; then
-            REVIEW_ARGS="$REVIEW_ARGS depth:full"
-        fi
-        REVIEW_PROMPT="/compound-engineering:ce-code-review $REVIEW_ARGS https://github.com/$OWNER/$REPO_NAME/pull/$PR"
-        ;;
     *)
         REVIEW_PROMPT="/$REVIEW_SKILL https://github.com/$OWNER/$REPO_NAME/pull/$PR"
         ;;

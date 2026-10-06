@@ -285,26 +285,18 @@ class ReviewDriverTest(unittest.TestCase):
         self.assertEqual(len(self.calls.read_text(encoding='utf-8').splitlines()), 4)
         self.assertTrue((self.directory / 'batch' / 'index.html').is_file())
 
-    def test_selected_ce_skill_reaches_every_pr_with_full_depth_when_requested(self):
-        result = self.run_batch('--review-skill', 'ce-code-review', level='high')
+    def test_selected_skill_reaches_every_pr_and_is_recorded_in_verdicts(self):
+        result = self.run_batch('--review-skill', '/deep-review', level='high')
         self.assertEqual(result.returncode, 0, result.stderr)
-        prompts = sorted(call['args'][1].splitlines()[0] for call in self.review_calls())
+        prompts = sorted(call['args'][1] for call in self.review_calls())
         self.assertEqual(prompts, [
-            '/compound-engineering:ce-code-review mode:agent depth:full https://github.com/ExampleOrg/ExampleRepo/pull/1',
-            '/compound-engineering:ce-code-review mode:agent depth:full https://github.com/ExampleOrg/OtherRepo/pull/2',
+            '/deep-review https://github.com/ExampleOrg/ExampleRepo/pull/1',
+            '/deep-review https://github.com/ExampleOrg/OtherRepo/pull/2',
         ])
         for number, repo in [(1, 'ExampleRepo'), (2, 'OtherRepo')]:
             fields = renderer.parse_verdict(self.directory / 'batch' / f'{repo}-{number}.verdict')
-            self.assertEqual(fields['REVIEW_SKILL'], 'ce-code-review')
+            self.assertEqual(fields['REVIEW_SKILL'], 'deep-review')
             self.assertEqual(fields['VERDICT'], 'READY_TO_MERGE')
-
-    def test_ce_skill_chooses_its_own_depth_by_default(self):
-        result = self.run_batch('--review-skill', '/compound-engineering:ce-code-review', pairs=('ExampleRepo', '1'))
-        self.assertEqual(result.returncode, 0, result.stderr)
-        prompt = self.review_calls()[0]['args'][1]
-        self.assertEqual(prompt.splitlines()[0],
-                         '/compound-engineering:ce-code-review mode:agent https://github.com/ExampleOrg/ExampleRepo/pull/1')
-        self.assertNotIn('depth:full', prompt)
 
     def test_other_review_skills_receive_the_pr_url_and_read_only_constraints(self):
         result = self.run_batch('--review-skill', 'example:deep-review', pairs=('ExampleRepo', '1'))
@@ -317,7 +309,7 @@ class ReviewDriverTest(unittest.TestCase):
         self.assertIn('do not substitute another review', instructions)
 
     def test_missing_or_invalid_skill_is_rejected_before_starting_a_batch(self):
-        for options in [('--review-skill',), ('--review-skill', ''), ('--review-skill', 'ce-code-review --apply')]:
+        for options in [('--review-skill',), ('--review-skill', ''), ('--review-skill', 'deep-review --apply')]:
             with self.subTest(options=options):
                 result = self.run_batch(*options, pairs=())
                 self.assertEqual(result.returncode, 2, result.stderr)

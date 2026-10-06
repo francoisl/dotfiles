@@ -22,19 +22,17 @@ All optional; the skill works with no arguments.
 - **A level** (`/review-queue high`) — review depth, one of
   `low|medium|high|max`. Default `medium`: fewer, higher-confidence findings,
   which is what the default `/code-review` uses for triage. Pass it as the second
-  argument to `run-batch.sh`. For `ce-code-review`, `high` or `max` forces the
-  full review workflow; `low` or `medium` lets CE choose its own depth. Other
-  skills use their own defaults.
-- **A review skill** (`/review-queue ce-code-review` or
-  `/review-queue 3 high ce-code-review`) — use that skill for every PR this run.
+  argument to `run-batch.sh`. Other review skills ignore the level and use their
+  own defaults.
+- **A review skill** (`/review-queue deep-review` or
+  `/review-queue 3 high deep-review`) — use that skill for every PR this run.
   Default `code-review`; selecting another skill does not change future runs.
-  Also accept `--review-skill <name>` or natural wording such as “using ce-code-review”.
+  Also accept `--review-skill <name>` or natural wording such as “using deep-review”.
   Pass it to `run-batch.sh` as `--review-skill <name>` after the level and before
   the repo/PR pairs. Skill names may include a plugin prefix, such as
-  `compound-engineering:ce-code-review`, and an optional leading `/`.
+  `plugin:deep-review`, and an optional leading `/`.
   Resolve the name against the skills available to the headless Claude runner;
-  plugin skills must be installed and enabled there. The installed CE skill is
-  `ce-code-review` (singular); resolve “ce-code-reviews” to it. Never silently
+  plugin skills must be installed and enabled there. Never silently
   substitute the default when the requested skill is unavailable.
 - **A repo name** (`/review-queue Integration-Server`) — restrict to one repo via
   `--repo`.
@@ -101,10 +99,10 @@ Pass every selected PR to the batch driver as `<repo> <number>` pairs:
   IS-Templates 5924
 ```
 
-For a full-depth CE review, for example:
+To use another review skill, for example:
 
 ```bash
-<skill-dir>/scripts/run-batch.sh <out-dir> high --review-skill ce-code-review \
+<skill-dir>/scripts/run-batch.sh <out-dir> medium --review-skill plugin:deep-review \
   Integration-Server 9254 \
   Web-Expensify 55605
 ```
@@ -123,10 +121,9 @@ worktree. It always exits 0 and always writes a `.verdict`, so a single failure
 cannot sink the batch or silently drop a PR.
 
 The default invocation stays `/code-review <level> <PR>`. Other skills receive
-the full PR URL and read-only review instructions. `ce-code-review` uses Claude's
-`/compound-engineering:ce-code-review` command with `mode:agent`; `high` and `max`
-also pass `depth:full`. Each verdict records `REVIEW_SKILL`. A failed review is
-`NEEDS_HUMAN`, including failures that emit a report before exiting.
+the full PR URL and read-only review instructions. Each verdict records
+`REVIEW_SKILL`. A failed review is `NEEDS_HUMAN`, including failures that emit a
+report before exiting.
 
 Why a worktree: the user's clones normally sit on unrelated feature branches with
 uncommitted work. Reviewing in place would feed the review that WIP as
@@ -230,7 +227,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 <skill-dir>/scripts/test-report.py
 ```
 
 The driver tests stub Git and Claude. They check the default command, skill
-selection across a batch, CE depth arguments, read-only prompts, invalid names,
+selection across a batch, read-only prompts, invalid names,
 and review failures without running paid AI reviews or fetching real PRs.
 
 The browser test needs an installed Playwright module and an existing temporary parent:

@@ -98,10 +98,7 @@
     "slack_slack_list_*": "allow",
     "slack_slack_get_reactions": "allow"
   },
-  "plugin": [
-    "./plugins/crit.ts",
-    "compound-engineering@git+https://github.com/EveryInc/compound-engineering-plugin.git"
-  ],
+  "plugin": ["./plugins/crit.ts"],
   "experimental": {
     "disable_paste_summary": true
   },
