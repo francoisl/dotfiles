@@ -1,5 +1,5 @@
-// Helpers for OpenCode wait-notify: detect foreground `crit` wait commands
-// and build toast copy. Shared by crit.ts and unit tests.
+// Helpers for OpenCode wait-notify: detect foreground `crit` wait commands,
+// extend their timeout, and build toast copy. Shared by crit.ts and unit tests.
 'use strict';
 
 /**
@@ -57,6 +57,16 @@ function isCritWaitCommand(command) {
 }
 
 /**
+ * Returns a timeout long enough for a foreground Crit review wait.
+ * @param {number} timeout
+ * @returns {number}
+ */
+function critWaitTimeout(timeout) {
+  const current = Number.isFinite(timeout) ? timeout : 0;
+  return Math.max(current, 24 * 60 * 60 * 1000);
+}
+
+/**
  * @param {string} [url]
  * @returns {{ title: string, message: string }}
  */
@@ -67,4 +77,4 @@ function roundReadyToast(url) {
   return { title: 'Crit', message };
 }
 
-module.exports = { isCritWaitCommand, roundReadyToast };
+module.exports = { isCritWaitCommand, critWaitTimeout, roundReadyToast };

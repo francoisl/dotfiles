@@ -134,7 +134,26 @@
         ]
       }
     ],
-    "SessionStart": [{"matcher":"^(startup|resume|clear|compact|fork)$","hooks":[{"type":"command","command":"bash '/Users/francois/.claude/hooks/herdr-agent-state.sh' session","timeout":10}]}]
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/francois/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",
@@ -167,5 +186,8 @@
   "promptSuggestionEnabled": false,
   "autoMemoryEnabled": true,
   "preferredNotifChannel": "auto",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8080"
+  }
 }

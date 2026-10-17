@@ -78,7 +78,7 @@ mkdir -p ~/.claude
 mkdir -p ~/.config/uv
 mkdir -p ~/.config/herdr
 mkdir -p ~/.config/opencode/commands
-mkdir -p ~/.config/opencode/plugins/lib
+mkdir -p ~/.config/opencode/plugins
 
 # Symlink terminal configs
 safe_symlink $DOTFILES_DIR/wezterm/wezterm.lua ~/.config/wezterm/wezterm.lua
@@ -142,9 +142,10 @@ safe_symlink $DOTFILES_DIR/opencode/github-comment-preferences.md ~/.config/open
 safe_symlink $DOTFILES_DIR/opencode/commands/crit.md ~/.config/opencode/commands/crit.md
 safe_symlink $DOTFILES_DIR/opencode/commands/k2-web.md ~/.config/opencode/commands/k2-web.md
 safe_symlink $DOTFILES_DIR/opencode/commands/review-queue.md ~/.config/opencode/commands/review-queue.md
-safe_symlink $DOTFILES_DIR/opencode/plugins/crit.ts ~/.config/opencode/plugins/crit.ts
+# OpenCode V2 only discovers a plugin directory when the directory itself is
+# linked, not when it holds symlinked files.
+safe_symlink $DOTFILES_DIR/opencode/plugins/crit ~/.config/opencode/plugins/crit
 safe_symlink $DOTFILES_DIR/opencode/plugins/rtk.ts ~/.config/opencode/plugins/rtk.ts
-safe_symlink $DOTFILES_DIR/opencode/plugins/lib/crit-wait-notify.js ~/.config/opencode/plugins/lib/crit-wait-notify.js
 
 # Symlink worktime CLI into ~/.local/bin (already on PATH)
 mkdir -p ~/.local/bin
